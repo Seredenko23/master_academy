@@ -1,5 +1,3 @@
-const json = require('../../data.json');
-
 function modifyProducts(products) {
   return products.map((product) => {
     const price = product.price || product.priceForPair;
@@ -8,4 +6,4 @@ function modifyProducts(products) {
   });
 }
 
-module.exports = modifyProducts(json);
+module.exports = modifyProducts;

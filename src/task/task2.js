@@ -1,10 +1,11 @@
-const data = require('./task3');
+const json = require('../../data.json');
 
 function getHighetPriceProduct(products) {
   let result;
   let max = 0;
   products.forEach((product) => {
-    const { price, quantity } = product;
+    const price = product.price || product.priceForPair;
+    const quantity = product.quantity || 0;
     const totalPrice = +price.slice(1) * quantity;
     if (totalPrice > max) {
       result = product;
@@ -14,4 +15,4 @@ function getHighetPriceProduct(products) {
   return result;
 }
 
-console.log(getHighetPriceProduct(data));
+module.exports = getHighetPriceProduct(json);
