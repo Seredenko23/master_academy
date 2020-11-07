@@ -1,4 +1,11 @@
-const { getFilteredData, getHighestPrice, getModifyData, notFound } = require('./controller');
+const {
+  getFilteredData,
+  getHighestPrice,
+  getModifyData,
+  notFound,
+  rewriteStore,
+  swapSources,
+} = require('./controller');
 
 function router(request, response) {
   const { url, method, queryParams, data } = request;
@@ -17,8 +24,20 @@ function router(request, response) {
       case '/modify':
         getModifyData(response);
         break;
+      case '/swap':
+        swapSources(response);
+        break;
       default:
         notFound(response);
+    }
+  } else if (method === 'POST') {
+    switch (url) {
+      case '/rewrite':
+        rewriteStore(response, data);
+        break;
+      default:
+        notFound(response);
+        break;
     }
   }
 }
