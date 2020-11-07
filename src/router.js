@@ -1,26 +1,24 @@
+const { getFilteredData, getHighestPrice, getModifyData, notFound } = require('./controller');
+
 function router(request, response) {
   const { url, method, queryParams, data } = request;
-
-  console.log('data: ', data);
-  console.log('queryParams: ', queryParams);
-  console.log('url:', url);
 
   if (method === 'GET') {
     switch (url) {
       case '/':
-        console.log('home');
+        console.log('Home');
         break;
       case '/filter':
-        console.log('filter');
+        getFilteredData(response, queryParams);
         break;
       case '/highest_price':
-        console.log('highest_price');
+        getHighestPrice(response);
         break;
       case '/modify':
-        console.log('modify');
+        getModifyData(response);
         break;
       default:
-        console.log('notFound');
+        notFound(response);
     }
   }
 }
