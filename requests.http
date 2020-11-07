@@ -1,0 +1,19 @@
+#GET
+GET http://localhost:3000/
+
+###
+GET http://localhost:3000/filter?field=type&value=socks
+
+###
+
+GET http://localhost:3000/highest_price
+
+###
+
+GET http://localhost:3000/modify
+
+###
+
+GET http://localhost:3000/asdasd
+
+###

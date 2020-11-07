@@ -1,5 +1,6 @@
-const { parseQuery } = require('querystring');
+const { parse: parseQuery } = require('querystring');
 const { URL } = require('url');
+const router = require('./router');
 
 function handler(request, response) {
   try {
@@ -18,8 +19,19 @@ function handler(request, response) {
       })
       .on('end', () => {
         body = Buffer.concat(body).toString();
+        router(
+          {
+            ...request,
+            data: body ? JSON.parse(body) : {},
+            url: parsedUrl.pathname,
+            queryParams,
+          },
+          response,
+        );
       });
   } catch (err) {
     console.log(err.message);
   }
 }
+
+module.exports = handler;
