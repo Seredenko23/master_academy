@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
 const json = require('../data.json');
 
@@ -37,8 +39,13 @@ function swapSources(response) {
 }
 
 function rewriteStore(response, data) {
-  store = data;
-  response.write(JSON.stringify(store));
+  if (isStore) {
+    store = data;
+  } else {
+    console.log(__dirname);
+    fs.writeFileSync(path.resolve(`${__dirname}../../`, 'data.json'), JSON.stringify(data));
+  }
+  response.write(JSON.stringify(getSource()));
   response.end();
 }
 
