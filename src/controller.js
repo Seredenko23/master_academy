@@ -17,7 +17,8 @@ function getFilteredData(response, queryParams) {
 }
 
 function getHighestPrice(response) {
-  response.write(JSON.stringify(highestPrice));
+  const highestPriceProduct = highestPrice(getSource());
+  response.write(JSON.stringify(highestPriceProduct));
   response.end();
 }
 
