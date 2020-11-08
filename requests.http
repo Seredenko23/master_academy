@@ -1,0 +1,32 @@
+#GET
+GET http://localhost:3000/
+
+###
+GET http://localhost:3000/filter?field=type&value=socks
+
+###
+
+GET http://localhost:3000/highest_price
+
+###
+
+GET http://localhost:3000/modify
+
+###
+
+GET http://localhost:3000/swap
+
+###
+
+GET http://localhost:3000/asdasd
+
+###
+#POST
+
+POST Http://localhost:3000/rewrite
+
+[
+    {"type":"socks","color":"red","quantity":10,"priceForPair":"$3"},
+    {"type":"socks","color":"green","priceForPair":"$10"},
+    {"type":"hat","color":"blue","quantity":8,"price":"$6"}
+]

@@ -1,16 +1,9 @@
-const {
-  task1: filterProducts,
-  task2: highestPriceProduct,
-  task3: modifyProducts,
-} = require('./task');
-const json = require('../data.json');
+require('dotenv').config();
+const http = require('http');
+const handler = require('./handler');
 
-function boot(products, param, value) {
-  const filteredProducts = filterProducts(products, param, value);
-  console.log('Task1: ', filteredProducts);
-  const modifiedProducts = modifyProducts(filteredProducts);
-  console.log('Task2: ', modifiedProducts);
-  console.log('Task3: ', highestPriceProduct);
-}
+const server = http.createServer(handler);
 
-boot(json, 'type', 'socks');
+server.listen(+process.env.PORT, () => {
+  console.log(`listening on port ${process.env.PORT}`);
+});

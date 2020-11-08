@@ -1,5 +1,3 @@
-const json = require('../../data.json');
-
 function getHighetPriceProduct(products) {
   let result;
   let max = 0;
@@ -15,4 +13,4 @@ function getHighetPriceProduct(products) {
   return result;
 }
 
-module.exports = getHighetPriceProduct(json);
+module.exports = getHighetPriceProduct;
