@@ -12,6 +12,8 @@
     "root": true,
     "rules": {
       "no-console":"off",
+      "no-plusplus":"off",
+      "no-extend-native": "off",
       "prettier/prettier": "error",
       "no-param-reassign": [
         "error",

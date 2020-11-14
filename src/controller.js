@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const rnd = require('./utils');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
 const json = require('../data.json');
 
@@ -48,6 +49,14 @@ function rewriteStore(response, data) {
   }
   response.write(JSON.stringify(getSource()));
   response.end();
+}
+
+function getSale(callback) {
+  setTimeout(() => {
+    const sale = rnd(1, 99);
+    if (sale >= 20) throw new Error('Sale greater than it needed');
+    callback(sale);
+  }, 50);
 }
 
 module.exports = {
