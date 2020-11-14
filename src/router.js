@@ -5,6 +5,8 @@ const {
   notFound,
   rewriteStore,
   swapSources,
+  getSalesPromise,
+  getSalesAsync,
 } = require('./controller');
 
 function router(request, response) {
@@ -26,6 +28,12 @@ function router(request, response) {
         break;
       case '/swap':
         swapSources(response);
+        break;
+      case '/sales_promise':
+        getSalesPromise(response);
+        break;
+      case '/sales_async':
+        getSalesAsync(response);
         break;
       default:
         notFound(response);

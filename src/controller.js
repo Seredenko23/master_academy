@@ -1,6 +1,9 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-loop-func */
 const fs = require('fs');
 const path = require('path');
-const rnd = require('./utils');
+const { repeatPromiseUntilResolved } = require('./utils');
+const { getSale, getSalePromisified } = require('./sales');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
 const json = require('../data.json');
 
@@ -51,12 +54,35 @@ function rewriteStore(response, data) {
   response.end();
 }
 
-function getSale(callback) {
-  setTimeout(() => {
-    const sale = rnd(1, 99);
-    if (sale >= 20) throw new Error('Sale greater than it needed');
-    callback(sale);
-  }, 50);
+function getSalesCallbacks(response) {
+  // TODO
+}
+
+function getSalesPromise(response) {
+  let data = getSource();
+  data = data.myMap((product) => {
+    return repeatPromiseUntilResolved(getSalePromisified).then((sale) => {
+      product.sale = sale;
+      return product;
+    });
+  });
+  Promise.all(data).then((result) => {
+    console.log(result);
+    response.write(JSON.stringify(result));
+    response.end();
+  });
+}
+
+async function getSalesAsync(response) {
+  let data = getSource();
+  data = data.myMap(async (product) => {
+    const sale = await repeatPromiseUntilResolved(getSalePromisified);
+    product.sale = sale;
+    return product;
+  });
+  data = await Promise.all(data);
+  response.write(JSON.stringify(data));
+  response.end();
 }
 
 module.exports = {
@@ -66,4 +92,6 @@ module.exports = {
   notFound,
   rewriteStore,
   swapSources,
+  getSalesAsync,
+  getSalesPromise,
 };

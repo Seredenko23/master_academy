@@ -18,6 +18,14 @@ GET http://localhost:3000/swap
 
 ###
 
+GET http://localhost:3000/sales_promise
+
+###
+
+GET http://localhost:3000/sales_async
+
+###
+
 GET http://localhost:3000/asdasd
 
 ###
