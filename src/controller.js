@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-loop-func */
 const fs = require('fs');
 const path = require('path');
 const { repeatPromiseUntilResolved } = require('./utils');
@@ -55,19 +53,38 @@ function rewriteStore(response, data) {
 }
 
 function getSalesCallbacks(response) {
-  // TODO
+  const data = getSource();
+  const newData = [];
+  data.forEach((prod) => getSale(callback, prod));
+  return newData;
+
+  function callback3(newData) {
+    if (newData.length !== data.length) return;
+    console.log(newData);
+    response.write(JSON.stringify(newData));
+    response.end();
+  }
+
+  function callback2(value, product) {
+    product.sale = value;
+    newData.push(product);
+    callback3(newData);
+  }
+
+  function callback(err, value, product) {
+    if (err) return getSale(callback, product);
+    callback2(value, product);
+  }
 }
 
 function getSalesPromise(response) {
-  let data = getSource();
-  data = data.myMap((product) => {
+  const data = getSource().myMap((product) => {
     return repeatPromiseUntilResolved(getSalePromisified).then((sale) => {
       product.sale = sale;
       return product;
     });
   });
   Promise.all(data).then((result) => {
-    console.log(result);
     response.write(JSON.stringify(result));
     response.end();
   });

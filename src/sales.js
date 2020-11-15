@@ -7,13 +7,13 @@ function generateSale() {
   return sale;
 }
 
-function getSale(callback) {
+function getSale(callback, product) {
   setTimeout(() => {
     try {
       const sale = generateSale();
-      callback(null, sale);
+      callback(null, sale, product);
     } catch (e) {
-      callback(e.message);
+      callback(e.message, null, product);
     }
   }, 50);
 }
