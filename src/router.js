@@ -7,6 +7,7 @@ const {
   swapSources,
   getSalesPromise,
   getSalesAsync,
+  getSalesCallbacks,
 } = require('./controller');
 
 function router(request, response) {
@@ -28,6 +29,9 @@ function router(request, response) {
         break;
       case '/swap':
         swapSources(response);
+        break;
+      case '/sales_callbacks':
+        getSalesCallbacks(response);
         break;
       case '/sales_promise':
         getSalesPromise(response);

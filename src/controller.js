@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { repeatPromiseUntilResolved } = require('./utils');
+const { repeatPromiseUntilResolved, defineAmountOfSales } = require('./utils');
 const { getSale, getSalePromisified } = require('./sales');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
 const json = require('../data.json');
@@ -79,8 +79,11 @@ function getSalesCallbacks(response) {
 
 function getSalesPromise(response) {
   const data = getSource().myMap((product) => {
-    return repeatPromiseUntilResolved(getSalePromisified).then((sale) => {
-      product.sale = sale;
+    const amount = defineAmountOfSales(product);
+    const sales = [];
+    for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
+    return Promise.all(sales).then((sales) => {
+      product.sale = sales.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
       return product;
     });
   });
@@ -93,8 +96,12 @@ function getSalesPromise(response) {
 async function getSalesAsync(response) {
   let data = getSource();
   data = data.myMap(async (product) => {
-    const sale = await repeatPromiseUntilResolved(getSalePromisified);
-    product.sale = sale;
+    const amount = defineAmountOfSales(product);
+    let sales = [];
+    for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
+    sales = await Promise.all(sales);
+    sales = sales.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
+    product.sale = sales;
     return product;
   });
   data = await Promise.all(data);
@@ -111,4 +118,5 @@ module.exports = {
   swapSources,
   getSalesAsync,
   getSalesPromise,
+  getSalesCallbacks,
 };

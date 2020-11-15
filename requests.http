@@ -18,6 +18,10 @@ GET http://localhost:3000/swap
 
 ###
 
+GET http://localhost:3000/sales_callbacks
+
+###
+
 GET http://localhost:3000/sales_promise
 
 ###
