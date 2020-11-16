@@ -56,19 +56,25 @@ function getSalesCallbacks(response) {
   const data = getSource();
   const newData = [];
   data.forEach((prod) => getSale(callback, prod));
-  return newData;
 
-  function callback3(newData) {
-    if (newData.length !== data.length) return;
-    console.log(newData);
-    response.write(JSON.stringify(newData));
+  function callback3(newSales) {
+    if (newSales.length !== data.length) return;
+    response.write(JSON.stringify(newSales));
     response.end();
   }
 
   function callback2(value, product) {
-    product.sale = value;
-    newData.push(product);
-    callback3(newData);
+    const limit = defineAmountOfSales(product);
+    if (Array.isArray(product.sale)) product.sale.push(value);
+    else product.sale = [value];
+
+    if (Array.isArray(product.sale) && product.sale.length === limit) {
+      product.sale = product.sale.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
+      newData.push(product);
+      callback3(newData);
+    } else {
+      getSale(callback, product);
+    }
   }
 
   function callback(err, value, product) {
@@ -82,8 +88,8 @@ function getSalesPromise(response) {
     const amount = defineAmountOfSales(product);
     const sales = [];
     for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
-    return Promise.all(sales).then((sales) => {
-      product.sale = sales.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
+    return Promise.all(sales).then((salesArray) => {
+      product.sale = salesArray.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
       return product;
     });
   });
@@ -108,6 +114,8 @@ async function getSalesAsync(response) {
   response.write(JSON.stringify(data));
   response.end();
 }
+
+getSalesCallbacks();
 
 module.exports = {
   getFilteredData,
