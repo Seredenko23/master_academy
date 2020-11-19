@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path');
-const { repeatPromiseUntilResolved, defineAmountOfSales } = require('./utils');
+const { createGunzip } = require('zlib');
+const { Transform } = require('stream');
+const {
+  repeatPromiseUntilResolved,
+  defineAmountOfSales,
+  transformCsvToJson,
+  promisifiedPipeline,
+} = require('./utils');
 const { getSale, getSalePromisified } = require('./sales');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
 const json = require('../data.json');
@@ -114,8 +121,28 @@ async function getSalesAsync(response) {
   response.write(JSON.stringify(data));
   response.end();
 }
+function customTransform() {
+  const transform = (chunk, encoding, callback) => {
+    const buff = Buffer.from(chunk);
+    console.log(chunk, 'fsad');
+    callback(null, buff);
+  };
+  return new Transform({ transform });
+}
 
-getSalesCallbacks();
+async function uploadCSV(inputStream) {
+  const gunzip = createGunzip();
+
+  const id = Date.now();
+  const filepath = `./upload/${id}.json`;
+  const outputStream = fs.createWriteStream(filepath);
+  const csvToJson = transformCsvToJson();
+  try {
+    await promisifiedPipeline(inputStream, gunzip, csvToJson, outputStream);
+  } catch (err) {
+    console.log('CSV pipeline failed: ', err);
+  }
+}
 
 module.exports = {
   getFilteredData,
@@ -127,4 +154,5 @@ module.exports = {
   getSalesAsync,
   getSalesPromise,
   getSalesCallbacks,
+  uploadCSV,
 };

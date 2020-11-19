@@ -1,3 +1,8 @@
+const { promisify } = require('util');
+const { pipeline, Transform } = require('stream');
+
+const promisifiedPipeline = promisify(pipeline);
+
 Array.prototype.myMap = function (callback) {
   const newArr = [];
   for (let i = 0; i < this.length; i++) newArr.push(callback(this[i], i, this));
@@ -26,4 +31,48 @@ function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-module.exports = { getRndInteger, defineAmountOfSales, repeatPromiseUntilResolved };
+function transformCsvToJson() {
+  let isFirst = true;
+  let lastEL = '';
+  let keys = [];
+
+  const transform = (chunk, encoding, callback) => {
+    const csvArray = chunk.toString().split('\n');
+    csvArray[0] = lastEL + csvArray[0];
+    lastEL = csvArray.pop();
+    console.log(csvArray);
+
+    if (isFirst) {
+      isFirst = !isFirst;
+      keys = csvArray.shift().split(',');
+      const str = csvArray.reduce((acc, red) => {
+        let jsonStr = red.split(',').map((value, ind) => `"${keys[ind]}": "${value}"`);
+        jsonStr = `,{${jsonStr}}`;
+        return acc + jsonStr;
+      }, '');
+      callback(null, `[${str.slice(1)}`);
+      return;
+    }
+
+    const str = csvArray.reduce((acc, red) => {
+      let jsonStr = red.split(',').map((value, ind) => `"${keys[ind]}": "${value}"`);
+      jsonStr = `,{${jsonStr}}`;
+      return acc + jsonStr;
+    }, '');
+    callback(null, str);
+  };
+
+  const flush = (callback) => {
+    callback(null, ']');
+  };
+
+  return new Transform({ transform, flush });
+}
+
+module.exports = {
+  getRndInteger,
+  defineAmountOfSales,
+  repeatPromiseUntilResolved,
+  transformCsvToJson,
+  promisifiedPipeline,
+};

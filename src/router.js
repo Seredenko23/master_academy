@@ -8,7 +8,28 @@ const {
   getSalesPromise,
   getSalesAsync,
   getSalesCallbacks,
+  uploadCSV,
 } = require('./controller');
+
+async function streamRouter(request, response) {
+  const { url, method } = request;
+  if (method === 'PUT') {
+    switch (url) {
+      case '/upload':
+        try {
+          await uploadCSV(request, response);
+        } catch (err) {
+          console.log('Failed to load CSV', err);
+          response.statusCode = 500;
+          response.write(JSON.stringify({ status: 'error' }));
+          response.end();
+        }
+        break;
+      default:
+        notFound(response);
+    }
+  }
+}
 
 function router(request, response) {
   const { url, method, queryParams, data } = request;
@@ -54,4 +75,4 @@ function router(request, response) {
   }
 }
 
-module.exports = router;
+module.exports = { router, streamRouter };
