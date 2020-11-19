@@ -4,14 +4,16 @@ const handler = require('./handler');
 
 const server = http.createServer(handler);
 
-function shutdownHandler() {
-  console.log('\nServer is closing...');
-  server.close(() => {
-    console.log('Server closed!');
-  });
-}
-
 function gracefulShutdown() {
+  function shutdownHandler(error) {
+    if (error) console.log('ERROR: ', error);
+    console.log('\nServer is closing...');
+    server.close(() => {
+      console.log('Server closed!');
+      process.exit();
+    });
+  }
+
   process.on('SIGINT', shutdownHandler);
   process.on('SIGTERM', shutdownHandler);
 
