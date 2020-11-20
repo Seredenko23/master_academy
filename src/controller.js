@@ -61,32 +61,29 @@ function rewriteStore(response, data) {
 
 function getSalesCallbacks(response) {
   const data = getSource();
-  const newData = [];
-  data.forEach((prod) => getSale(callback, prod));
+  const newSales = [];
+  data.myMap((prod) => getSale(callback, prod));
 
-  function callback3(newSales) {
-    if (newSales.length !== data.length) return;
-    response.write(JSON.stringify(newSales));
-    response.end();
-  }
+  function callback(err, value, product) {
+    if (err) {
+      getSale(callback, product);
+      return;
+    }
 
-  function callback2(value, product) {
     const limit = defineAmountOfSales(product);
     if (Array.isArray(product.sale)) product.sale.push(value);
     else product.sale = [value];
 
     if (Array.isArray(product.sale) && product.sale.length === limit) {
       product.sale = product.sale.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
-      newData.push(product);
-      callback3(newData);
+      newSales.push(product);
     } else {
       getSale(callback, product);
     }
-  }
 
-  function callback(err, value, product) {
-    if (err) return getSale(callback, product);
-    callback2(value, product);
+    if (newSales.length !== data.length) return;
+    response.write(JSON.stringify(newSales));
+    response.end();
   }
 }
 
@@ -95,39 +92,49 @@ function getSalesPromise(response) {
     const amount = defineAmountOfSales(product);
     const sales = [];
     for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
-    return Promise.all(sales).then((salesArray) => {
-      product.sale = salesArray.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
-      return product;
+    return Promise.all(sales)
+      .then((salesArray) => {
+        product.sale = salesArray.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
+        return product;
+      })
+      .catch(() => {
+        response.statusCode = 500;
+        response.write({ status: 'error' });
+        response.end();
+      });
+  });
+  Promise.all(data)
+    .then((result) => {
+      response.write(JSON.stringify(result));
+      response.end();
+    })
+    .catch(() => {
+      response.statusCode = 500;
+      response.write(JSON.stringify({ status: 'error' }));
+      response.end();
     });
-  });
-  Promise.all(data).then((result) => {
-    response.write(JSON.stringify(result));
-    response.end();
-  });
 }
 
 async function getSalesAsync(response) {
-  let data = getSource();
-  data = data.myMap(async (product) => {
-    const amount = defineAmountOfSales(product);
-    let sales = [];
-    for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
-    sales = await Promise.all(sales);
-    sales = sales.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
-    product.sale = sales;
-    return product;
-  });
-  data = await Promise.all(data);
-  response.write(JSON.stringify(data));
-  response.end();
-}
-function customTransform() {
-  const transform = (chunk, encoding, callback) => {
-    const buff = Buffer.from(chunk);
-    console.log(chunk, 'fsad');
-    callback(null, buff);
-  };
-  return new Transform({ transform });
+  try {
+    let data = getSource();
+    data = data.myMap(async (product) => {
+      const amount = defineAmountOfSales(product);
+      let sales = [];
+      for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
+      sales = await Promise.all(sales);
+      sales = sales.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
+      product.sale = sales;
+      return product;
+    });
+    data = await Promise.all(data);
+    response.write(JSON.stringify(data));
+    response.end();
+  } catch (e) {
+    response.statusCode = 500;
+    response.write(JSON.stringify({ status: 'error' }));
+    response.end();
+  }
 }
 
 async function uploadCSV(inputStream) {

@@ -31,6 +31,14 @@ function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function generateJsonStr(arr, keys) {
+  return arr.reduce((acc, red) => {
+    let jsonStr = red.split(',').map((value, ind) => `"${keys[ind]}": "${value}"`);
+    jsonStr = `,{${jsonStr}}`;
+    return acc + jsonStr;
+  }, '');
+}
+
 function transformCsvToJson() {
   let isFirst = true;
   let lastEL = '';
@@ -45,20 +53,12 @@ function transformCsvToJson() {
     if (isFirst) {
       isFirst = !isFirst;
       keys = csvArray.shift().split(',');
-      const str = csvArray.reduce((acc, red) => {
-        let jsonStr = red.split(',').map((value, ind) => `"${keys[ind]}": "${value}"`);
-        jsonStr = `,{${jsonStr}}`;
-        return acc + jsonStr;
-      }, '');
+      const str = generateJsonStr(csvArray, keys);
       callback(null, `[${str.slice(1)}`);
       return;
     }
 
-    const str = csvArray.reduce((acc, red) => {
-      let jsonStr = red.split(',').map((value, ind) => `"${keys[ind]}": "${value}"`);
-      jsonStr = `,{${jsonStr}}`;
-      return acc + jsonStr;
-    }, '');
+    const str = generateJsonStr(csvArray, keys);
     callback(null, str);
   };
 
