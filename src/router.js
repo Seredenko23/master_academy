@@ -10,6 +10,7 @@ const {
   getSalesCallbacks,
   uploadCSV,
   getFiles,
+  optimizeFile,
 } = require('./controller');
 
 async function streamRouter(request, response) {
@@ -63,6 +64,9 @@ function router(request, response) {
         break;
       case '/get_files':
         getFiles(response);
+        break;
+      case '/upload/optimize':
+        optimizeFile(response, queryParams);
         break;
       default:
         notFound(response);

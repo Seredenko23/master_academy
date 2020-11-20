@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
 const { readdir } = require('fs');
@@ -35,8 +36,15 @@ function getRndInteger(min, max) {
 
 function generateJsonStr(arr, keys) {
   return arr.reduce((acc, red) => {
-    let jsonStr = red.split(',').map((value, ind) => `"${keys[ind]}": "${value}"`);
-    jsonStr = `,{${jsonStr}}`;
+    let jsonStr = red
+      .split(',')
+      .map(
+        (value, ind) =>
+          `"${keys[ind]}": ${
+            !isNaN(+value) || value === 'true' || value === 'false' ? value : `"${value}"`
+          }`,
+      );
+    jsonStr = `,\n\t{${jsonStr}}`;
     return acc + jsonStr;
   }, '');
 }
@@ -65,7 +73,7 @@ function transformCsvToJson() {
   };
 
   const flush = (callback) => {
-    callback(null, ']');
+    callback(null, '\n]');
   };
 
   return new Transform({ transform, flush });

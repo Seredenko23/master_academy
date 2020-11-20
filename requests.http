@@ -5,6 +5,9 @@ GET http://localhost:3000/
 GET http://localhost:3000/filter?field=type&value=socks
 
 ###
+GET http://localhost:3000/upload/optimize?filename=1605896561997.json
+
+###
 
 GET http://localhost:3000/highest_price
 

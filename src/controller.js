@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { createInterface } = require('readline');
 const { createGunzip } = require('zlib');
 const {
   repeatPromiseUntilResolved,
@@ -163,6 +164,40 @@ async function uploadCSV(inputStream) {
   }
 }
 
+async function optimizeFile(response, query) {
+  const uniqueProduct = [];
+  const { filename } = query;
+  const filepath = './upload/';
+  const fileStream = fs.createReadStream(filepath + filename);
+
+  const rl = createInterface({
+    input: fileStream,
+    crlfDelay: Infinity,
+  });
+
+  rl.on('line', async (line) => {
+    if (line === '[' || line === ']') return;
+    if (line[line.length - 1] === ',') line = line.slice(0, -1);
+    const product = await JSON.parse(line);
+    const str = Object.entries(product);
+    str.splice(2, 1);
+    for (let i = 0; i < uniqueProduct.length; i++) {
+      const uniqueStr = Object.entries(uniqueProduct[i]);
+      uniqueStr.splice(2, 1);
+      if (str.toString() === uniqueStr.toString()) {
+        uniqueProduct[i].quantity += product.quantity;
+        return;
+      }
+    }
+    uniqueProduct.push(product);
+  }).on('close', () => {
+    const writableStream = fs.createWriteStream(`./upload/optimized/${filename}`);
+    writableStream.write(JSON.stringify(uniqueProduct));
+    response.write(JSON.stringify({ status: 'ok' }));
+    response.end();
+  });
+}
+
 module.exports = {
   getFilteredData,
   getHighestPrice,
@@ -175,4 +210,5 @@ module.exports = {
   getSalesCallbacks,
   uploadCSV,
   getFiles,
+  optimizeFile,
 };
