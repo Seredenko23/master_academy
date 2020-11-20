@@ -1,7 +1,9 @@
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
+const { readdir } = require('fs');
 
 const promisifiedPipeline = promisify(pipeline);
+const promisifiedReaddir = promisify(readdir);
 
 Array.prototype.myMap = function (callback) {
   const newArr = [];
@@ -75,4 +77,5 @@ module.exports = {
   repeatPromiseUntilResolved,
   transformCsvToJson,
   promisifiedPipeline,
+  promisifiedReaddir,
 };

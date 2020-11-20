@@ -30,6 +30,10 @@ GET http://localhost:3000/sales_async
 
 ###
 
+GET http://localhost:3000/get_files
+
+###
+
 GET http://localhost:3000/asdasd
 
 ###

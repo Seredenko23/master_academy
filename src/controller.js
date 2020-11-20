@@ -1,12 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const { createGunzip } = require('zlib');
-const { Transform } = require('stream');
 const {
   repeatPromiseUntilResolved,
   defineAmountOfSales,
   transformCsvToJson,
   promisifiedPipeline,
+  promisifiedReaddir,
 } = require('./utils');
 const { getSale, getSalePromisified } = require('./sales');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
@@ -137,6 +137,18 @@ async function getSalesAsync(response) {
   }
 }
 
+async function getFiles(response) {
+  try {
+    const fileList = await promisifiedReaddir('./upload');
+    response.write(JSON.stringify(fileList));
+    response.end();
+  } catch (e) {
+    response.statusCode = 500;
+    response.write(JSON.stringify({ status: 'error' }));
+    response.end();
+  }
+}
+
 async function uploadCSV(inputStream) {
   const gunzip = createGunzip();
 
@@ -162,4 +174,5 @@ module.exports = {
   getSalesPromise,
   getSalesCallbacks,
   uploadCSV,
+  getFiles,
 };
