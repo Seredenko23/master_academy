@@ -1,10 +1,11 @@
 /* eslint-disable no-restricted-globals */
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
-const { readdir } = require('fs');
+const { readdir, stat } = require('fs');
 
 const promisifiedPipeline = promisify(pipeline);
 const promisifiedReaddir = promisify(readdir);
+const promisifiedStat = promisify(stat);
 
 Array.prototype.myMap = function (callback) {
   const newArr = [];
@@ -58,7 +59,6 @@ function transformCsvToJson() {
     const csvArray = chunk.toString().split('\n');
     csvArray[0] = lastEL + csvArray[0];
     lastEL = csvArray.pop();
-    console.log(csvArray);
 
     if (isFirst) {
       isFirst = !isFirst;
@@ -79,6 +79,17 @@ function transformCsvToJson() {
   return new Transform({ transform, flush });
 }
 
+async function getFilesInfo(path) {
+  let files = await promisifiedReaddir(path);
+  files = files.filter((file) => file.split('.').length >= 2);
+  files = files.map(async (file) => {
+    const { size, birthtime } = await promisifiedStat(`${path}/${file}`);
+    return { filename: file, size, birthtime };
+  });
+  console.log(await Promise.all(files));
+  return Promise.all(files);
+}
+
 module.exports = {
   getRndInteger,
   defineAmountOfSales,
@@ -86,4 +97,5 @@ module.exports = {
   transformCsvToJson,
   promisifiedPipeline,
   promisifiedReaddir,
+  getFilesInfo,
 };

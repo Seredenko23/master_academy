@@ -2,12 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const { createInterface } = require('readline');
 const { createGunzip } = require('zlib');
+const uuid = require('uuid');
 const {
   repeatPromiseUntilResolved,
   defineAmountOfSales,
   transformCsvToJson,
   promisifiedPipeline,
   promisifiedReaddir,
+  getFilesInfo,
 } = require('./utils');
 const { getSale, getSalePromisified } = require('./sales');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
@@ -140,8 +142,10 @@ async function getSalesAsync(response) {
 
 async function getFiles(response) {
   try {
-    const fileList = await promisifiedReaddir('./upload');
-    response.write(JSON.stringify(fileList));
+    const files = await getFilesInfo('./upload');
+    const optimizedFiles = await getFilesInfo('./upload/optimized');
+
+    response.write(JSON.stringify({ optimized: optimizedFiles, upload: files }));
     response.end();
   } catch (e) {
     response.statusCode = 500;
@@ -153,7 +157,7 @@ async function getFiles(response) {
 async function uploadCSV(inputStream) {
   const gunzip = createGunzip();
 
-  const id = Date.now();
+  const id = uuid.v4();
   const filepath = `./upload/${id}.json`;
   const outputStream = fs.createWriteStream(filepath);
   const csvToJson = transformCsvToJson();
@@ -165,7 +169,7 @@ async function uploadCSV(inputStream) {
 }
 
 async function optimizeFile(response, query) {
-  const uniqueProduct = [];
+  const uniqueProduct = {};
   const { filename } = query;
   const filepath = './upload/';
   const fileStream = fs.createReadStream(filepath + filename);
@@ -179,21 +183,17 @@ async function optimizeFile(response, query) {
     if (line === '[' || line === ']') return;
     if (line[line.length - 1] === ',') line = line.slice(0, -1);
     const product = await JSON.parse(line);
-    const str = Object.entries(product);
+    let str = Object.entries(product);
     str.splice(2, 1);
-    for (let i = 0; i < uniqueProduct.length; i++) {
-      const uniqueStr = Object.entries(uniqueProduct[i]);
-      uniqueStr.splice(2, 1);
-      if (str.toString() === uniqueStr.toString()) {
-        uniqueProduct[i].quantity += product.quantity;
-        return;
-      }
-    }
-    uniqueProduct.push(product);
+    str = str.toString();
+    if (uniqueProduct[str]) uniqueProduct[str].quantity += product.quantity;
+    else uniqueProduct[str] = product;
   }).on('close', () => {
+    const productsOptimized = Object.values(uniqueProduct);
     const writableStream = fs.createWriteStream(`./upload/optimized/${filename}`);
-    writableStream.write(JSON.stringify(uniqueProduct));
-    response.write(JSON.stringify({ status: 'ok' }));
+    writableStream.write(JSON.stringify(productsOptimized));
+    const totalQuantity = productsOptimized.reduce((acc, red) => acc + red.quantity, 0);
+    response.write(JSON.stringify({ totalQuantity }));
     response.end();
   });
 }
