@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { createInterface } = require('readline');
 const { createGunzip } = require('zlib');
 const uuid = require('uuid');
 const {
@@ -8,9 +7,9 @@ const {
   defineAmountOfSales,
   transformCsvToJson,
   promisifiedPipeline,
-  promisifiedReaddir,
   getFilesInfo,
 } = require('./utils');
+const { optimization } = require('./optimization');
 const { getSale, getSalePromisified } = require('./sales');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
 const json = require('../data.json');
@@ -155,13 +154,14 @@ async function getFiles(response) {
 }
 
 async function uploadCSV(inputStream) {
-  const gunzip = createGunzip();
-
-  const id = uuid.v4();
-  const filepath = `./upload/${id}.json`;
-  const outputStream = fs.createWriteStream(filepath);
-  const csvToJson = transformCsvToJson();
   try {
+    const gunzip = createGunzip();
+
+    const id = uuid.v4();
+    const filepath = `./upload/${id}.json`;
+    const outputStream = fs.createWriteStream(filepath);
+    const csvToJson = transformCsvToJson();
+
     await promisifiedPipeline(inputStream, gunzip, csvToJson, outputStream);
   } catch (err) {
     console.log('CSV pipeline failed: ', err);
@@ -169,26 +169,16 @@ async function uploadCSV(inputStream) {
 }
 
 async function optimizeFile(response, query) {
-  const uniqueProduct = {};
   const { filename } = query;
-  const filepath = './upload/';
-  const fileStream = fs.createReadStream(filepath + filename);
+  const filepath = './upload';
 
-  const rl = createInterface({
-    input: fileStream,
-    crlfDelay: Infinity,
-  });
-
-  rl.on('line', async (line) => {
-    if (line === '[' || line === ']') return;
-    if (line[line.length - 1] === ',') line = line.slice(0, -1);
-    const product = await JSON.parse(line);
-    let str = Object.entries(product);
-    str.splice(2, 1);
-    str = str.toString();
-    if (uniqueProduct[str]) uniqueProduct[str].quantity += product.quantity;
-    else uniqueProduct[str] = product;
-  }).on('close', () => {
+  optimization(`${filepath}/${filename}`, (e, uniqueProduct) => {
+    if (e) {
+      response.statusCode = 500;
+      response.write(JSON.stringify({ status: 'error' }));
+      response.end();
+      return;
+    }
     const productsOptimized = Object.values(uniqueProduct);
     const writableStream = fs.createWriteStream(`./upload/optimized/${filename}`);
     writableStream.write(JSON.stringify(productsOptimized));

@@ -5,7 +5,7 @@ GET http://localhost:3000/
 GET http://localhost:3000/filter?field=type&value=socks
 
 ###
-GET http://localhost:3000/upload/optimize?filename=bbf2d4d0-18c2-43b8-a9e8-3edddd04f2a0.json
+GET http://localhost:3000/upload/optimize?filename=31305f3c-c6a1-4ead-baa4-7801a52ce825.json
 
 ###
 

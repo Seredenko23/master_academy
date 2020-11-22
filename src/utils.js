@@ -86,7 +86,6 @@ async function getFilesInfo(path) {
     const { size, birthtime } = await promisifiedStat(`${path}/${file}`);
     return { filename: file, size, birthtime };
   });
-  console.log(await Promise.all(files));
   return Promise.all(files);
 }
 
