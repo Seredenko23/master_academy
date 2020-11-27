@@ -174,18 +174,18 @@ async function optimizeFile(response, query) {
 
   optimization(`${filepath}/${filename}`, (e, uniqueProduct) => {
     if (e) {
-      response.statusCode = 500;
-      response.write(JSON.stringify({ status: 'error' }));
-      response.end();
+      console.log('ERROR: ', e.message);
       return;
     }
     const productsOptimized = Object.values(uniqueProduct);
     const writableStream = fs.createWriteStream(`./upload/optimized/${filename}`);
     writableStream.write(JSON.stringify(productsOptimized));
     const totalQuantity = productsOptimized.reduce((acc, red) => acc + red.quantity, 0);
-    response.write(JSON.stringify({ totalQuantity }));
-    response.end();
+    console.log('Total quantity equal ', totalQuantity);
   });
+
+  response.statusCode = 202;
+  response.end();
 }
 
 module.exports = {
