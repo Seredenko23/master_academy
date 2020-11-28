@@ -1,10 +1,10 @@
-require('dotenv').config();
-const http = require('http');
-const { initializeAutomaticOptimization } = require('./optimization');
-const handler = require('./handler');
+const app = require('./server');
+const { port, optimizationTime } = require('./config');
+
+const { initializeAutomaticOptimization } = require('./services/optimization');
 
 let optimizationTimer;
-const server = http.createServer(handler);
+let server;
 
 function initializeGracefulShutdown() {
   function shutdownHandler(error) {
@@ -24,11 +24,11 @@ function initializeGracefulShutdown() {
   process.on('unhandledRejection', shutdownHandler);
 }
 
-function boot() {
+async function boot() {
   initializeGracefulShutdown();
-  optimizationTimer = initializeAutomaticOptimization('./upload', process.env.PORT);
-  server.listen(+process.env.PORT, () => {
-    console.log(`listening on port ${process.env.PORT}`);
+  optimizationTimer = initializeAutomaticOptimization('./upload', optimizationTime);
+  server = app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
   });
 }
 
