@@ -54,7 +54,7 @@ async function uploadCSVFile(request, response) {
   try {
     await uploadCSV(request, response);
     response.statusCode = 202;
-    response.end();
+    response.status(202).end();
   } catch (err) {
     console.log('Failed to load CSV', err);
     response.status(500).send({ status: 'error' });
