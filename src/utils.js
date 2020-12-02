@@ -1,11 +1,9 @@
 /* eslint-disable no-restricted-globals */
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
-const { readdir, stat } = require('fs');
+const { readdir, stat } = require('fs').promises;
 
 const promisifiedPipeline = promisify(pipeline);
-const promisifiedReaddir = promisify(readdir);
-const promisifiedStat = promisify(stat);
 
 Array.prototype.myMap = function (callback) {
   const newArr = [];
@@ -80,10 +78,10 @@ function transformCsvToJson() {
 }
 
 async function getFilesInfo(path) {
-  let files = await promisifiedReaddir(path);
+  let files = await readdir(path);
   files = files.filter((file) => file.split('.').length >= 2);
   files = files.map(async (file) => {
-    const { size, birthtime } = await promisifiedStat(`${path}/${file}`);
+    const { size, birthtime } = await stat(`${path}/${file}`);
     return { filename: file, size, birthtime };
   });
   return Promise.all(files);
@@ -94,7 +92,5 @@ module.exports = {
   defineAmountOfSales,
   repeatPromiseUntilResolved,
   transformCsvToJson,
-  promisifiedPipeline,
-  promisifiedReaddir,
   getFilesInfo,
 };

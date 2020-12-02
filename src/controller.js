@@ -188,6 +188,19 @@ async function optimizeFile(response, query) {
   response.end();
 }
 
+async function uploadCSVFile(request, response) {
+  try {
+    await uploadCSV(request, response);
+    response.statusCode = 202;
+    response.end();
+  } catch (err) {
+    console.log('Failed to load CSV', err);
+    response.statusCode = 500;
+    response.write(JSON.stringify({ status: 'error' }));
+    response.end();
+  }
+}
+
 module.exports = {
   getFilteredData,
   getHighestPrice,
@@ -201,4 +214,5 @@ module.exports = {
   uploadCSV,
   getFiles,
   optimizeFile,
+  uploadCSVFile,
 };

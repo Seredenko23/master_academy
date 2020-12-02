@@ -8,7 +8,7 @@ const {
   getSalesPromise,
   getSalesAsync,
   getSalesCallbacks,
-  uploadCSV,
+  uploadCSVFile,
   getFiles,
   optimizeFile,
 } = require('./controller');
@@ -18,14 +18,7 @@ async function streamRouter(request, response) {
   if (method === 'PUT') {
     switch (url) {
       case '/upload':
-        try {
-          await uploadCSV(request, response);
-        } catch (err) {
-          console.log('Failed to load CSV', err);
-          response.statusCode = 500;
-          response.write(JSON.stringify({ status: 'error' }));
-          response.end();
-        }
+        uploadCSVFile(request, response);
         break;
       default:
         notFound(response);

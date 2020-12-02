@@ -5,7 +5,8 @@ const { router, streamRouter } = require('./router');
 // eslint-disable-next-line consistent-return
 function handler(request, response) {
   try {
-    if (request.headers['content-type'] === 'text/csv') return streamRouter(request, response);
+    if (request.headers['content-type'] === 'application/gzip')
+      return streamRouter(request, response);
 
     const { url } = request;
     const parsedUrl = new URL(url, process.env.ORIGIN);
