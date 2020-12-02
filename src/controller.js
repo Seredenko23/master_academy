@@ -1,6 +1,15 @@
 const fs = require('fs');
 const path = require('path');
-const { repeatPromiseUntilResolved, defineAmountOfSales } = require('./utils');
+const { createGunzip } = require('zlib');
+const uuid = require('uuid');
+const {
+  repeatPromiseUntilResolved,
+  defineAmountOfSales,
+  transformCsvToJson,
+  promisifiedPipeline,
+  getFilesInfo,
+} = require('./utils');
+const { optimization } = require('./optimization');
 const { getSale, getSalePromisified } = require('./sales');
 const { task1: filter, task2: highestPrice, task3: modify } = require('./task');
 const json = require('../data.json');
@@ -130,6 +139,68 @@ async function getSalesAsync(response) {
   }
 }
 
+async function getFiles(response) {
+  try {
+    const files = await getFilesInfo('./upload');
+    const optimizedFiles = await getFilesInfo('./upload/optimized');
+
+    response.write(JSON.stringify({ optimized: optimizedFiles, upload: files }));
+    response.end();
+  } catch (e) {
+    response.statusCode = 500;
+    response.write(JSON.stringify({ status: 'error' }));
+    response.end();
+  }
+}
+
+async function uploadCSV(inputStream) {
+  try {
+    const gunzip = createGunzip();
+
+    const id = uuid.v4();
+    const filepath = `./upload/${id}.json`;
+    const outputStream = fs.createWriteStream(filepath);
+    const csvToJson = transformCsvToJson();
+
+    await promisifiedPipeline(inputStream, gunzip, csvToJson, outputStream);
+  } catch (err) {
+    console.log('CSV pipeline failed: ', err);
+  }
+}
+
+async function optimizeFile(response, query) {
+  const { filename } = query;
+  const filepath = './upload';
+
+  optimization(`${filepath}/${filename}`, (e, uniqueProduct) => {
+    if (e) {
+      console.log('ERROR: ', e.message);
+      return;
+    }
+    const productsOptimized = Object.values(uniqueProduct);
+    const writableStream = fs.createWriteStream(`./upload/optimized/${filename}`);
+    writableStream.write(JSON.stringify(productsOptimized));
+    const totalQuantity = productsOptimized.reduce((acc, red) => acc + red.quantity, 0);
+    console.log('Total quantity equal ', totalQuantity);
+  });
+
+  response.statusCode = 202;
+  response.end();
+}
+
+async function uploadCSVFile(request, response) {
+  try {
+    await uploadCSV(request, response);
+    response.statusCode = 202;
+    response.end();
+  } catch (err) {
+    console.log('Failed to load CSV', err);
+    response.statusCode = 500;
+    response.write(JSON.stringify({ status: 'error' }));
+    response.end();
+  }
+}
+
 module.exports = {
   getFilteredData,
   getHighestPrice,
@@ -140,4 +211,8 @@ module.exports = {
   getSalesAsync,
   getSalesPromise,
   getSalesCallbacks,
+  uploadCSV,
+  getFiles,
+  optimizeFile,
+  uploadCSVFile,
 };

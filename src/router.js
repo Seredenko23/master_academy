@@ -8,7 +8,23 @@ const {
   getSalesPromise,
   getSalesAsync,
   getSalesCallbacks,
+  uploadCSVFile,
+  getFiles,
+  optimizeFile,
 } = require('./controller');
+
+async function streamRouter(request, response) {
+  const { url, method } = request;
+  if (method === 'PUT') {
+    switch (url) {
+      case '/upload':
+        uploadCSVFile(request, response);
+        break;
+      default:
+        notFound(response);
+    }
+  }
+}
 
 function router(request, response) {
   const { url, method, queryParams, data } = request;
@@ -39,6 +55,12 @@ function router(request, response) {
       case '/sales_async':
         getSalesAsync(response);
         break;
+      case '/get_files':
+        getFiles(response);
+        break;
+      case '/upload/optimize':
+        optimizeFile(response, queryParams);
+        break;
       default:
         notFound(response);
     }
@@ -54,4 +76,4 @@ function router(request, response) {
   }
 }
 
-module.exports = router;
+module.exports = { router, streamRouter };
