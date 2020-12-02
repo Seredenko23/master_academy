@@ -49,4 +49,16 @@ async function optimizeFile(response, query) {
   response.status(202).end();
 }
 
-module.exports = { optimizeFile, uploadCSV, getFiles };
+async function uploadCSVFile(request, response) {
+  if (request.headers['content-type'] === 'application/gzip') throw new Error('Wrong file!');
+  try {
+    await uploadCSV(request, response);
+    response.statusCode = 202;
+    response.end();
+  } catch (err) {
+    console.log('Failed to load CSV', err);
+    response.status(500).send({ status: 'error' });
+  }
+}
+
+module.exports = { optimizeFile, uploadCSVFile, getFiles };

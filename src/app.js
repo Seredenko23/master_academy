@@ -1,16 +1,17 @@
+const fs = require('fs');
 const app = require('./server');
-const { port, optimizationTime } = require('./config');
+const { port, optimizationTime, optimizedDirectory, uploadDirectory } = require('./config');
 
 const { initializeAutomaticOptimization } = require('./services/optimization');
 
-let optimizationTimer;
+let optimizationJob;
 let server;
 
 function initializeGracefulShutdown() {
   function shutdownHandler(error) {
     if (error) console.log('ERROR: ', error);
     console.log('\nServer is closing...');
-    clearInterval(optimizationTimer);
+    optimizationJob.cancel();
     server.close(() => {
       console.log('Server closed!');
       process.exit();
@@ -25,8 +26,10 @@ function initializeGracefulShutdown() {
 }
 
 async function boot() {
+  if (!fs.existsSync(uploadDirectory)) fs.mkdirSync(uploadDirectory);
+  if (!fs.existsSync(optimizedDirectory)) fs.mkdirSync(optimizedDirectory);
   initializeGracefulShutdown();
-  optimizationTimer = initializeAutomaticOptimization('./upload', optimizationTime);
+  optimizationJob = initializeAutomaticOptimization('./upload', optimizationTime);
   server = app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
   });

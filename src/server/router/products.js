@@ -1,19 +1,10 @@
 const { Router } = require('express');
-const { uploadCSV, getFiles, optimizeFile } = require('../controllers/products');
+const { uploadCSVFile, getFiles, optimizeFile } = require('../controllers/products');
 
 const products = Router();
 
 products.put('/upload', async (req, res) => {
-  console.log(req.headers);
-  if (req.headers['content-type'] !== 'application/gzip') throw new Error('Wrong file!');
-  try {
-    await uploadCSV(req, res);
-  } catch (err) {
-    console.log('Failed to load CSV', err);
-    res.statusCode = 500;
-    res.write(JSON.stringify({ status: 'error' }));
-    res.end();
-  }
+  await uploadCSVFile(req, res);
 });
 
 products.get('/get_files', (req, res) => {
