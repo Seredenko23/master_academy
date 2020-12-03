@@ -1,11 +1,11 @@
-require('dotenv').config();
-const http = require('http');
 const fs = require('fs');
-const { initializeAutomaticOptimization } = require('./optimization');
-const handler = require('./handler');
+const app = require('./server');
+const { port, optimizationTime, optimizedDirectory, uploadDirectory } = require('./config');
+
+const { initializeAutomaticOptimization } = require('./services/optimization');
 
 let optimizationJob;
-const server = http.createServer(handler);
+let server;
 
 function initializeGracefulShutdown() {
   function shutdownHandler(error) {
@@ -25,14 +25,13 @@ function initializeGracefulShutdown() {
   process.on('unhandledRejection', shutdownHandler);
 }
 
-function boot() {
-  if (!fs.existsSync(process.env.UPLOAD_DIRECTORY)) fs.mkdirSync(process.env.UPLOAD_DIRECTORY);
-  if (!fs.existsSync(process.env.OPTIMIZED_DIRECTORY))
-    fs.mkdirSync(process.env.OPTIMIZED_DIRECTORY);
+async function boot() {
+  if (!fs.existsSync(uploadDirectory)) fs.mkdirSync(uploadDirectory);
+  if (!fs.existsSync(optimizedDirectory)) fs.mkdirSync(optimizedDirectory);
   initializeGracefulShutdown();
-  optimizationJob = initializeAutomaticOptimization('./upload', process.env.OPTIMIZATION_TIME);
-  server.listen(+process.env.PORT, () => {
-    console.log(`listening on port ${process.env.PORT}`);
+  optimizationJob = initializeAutomaticOptimization('./upload', optimizationTime);
+  server = app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
   });
 }
 

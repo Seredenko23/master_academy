@@ -1,8 +1,8 @@
 /* eslint-disable no-return-await */
 const { createInterface } = require('readline');
-const { createReadStream, createWriteStream } = require('fs');
-const { unlink } = require('fs').promises;
 const schedule = require('node-schedule');
+const { unlink } = require('fs').promises;
+const { createReadStream, createWriteStream } = require('fs');
 const { getFilesInfo } = require('./utils');
 
 async function defineUnique(line, store) {

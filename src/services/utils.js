@@ -92,5 +92,6 @@ module.exports = {
   defineAmountOfSales,
   repeatPromiseUntilResolved,
   transformCsvToJson,
+  promisifiedPipeline,
   getFilesInfo,
 };

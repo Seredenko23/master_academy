@@ -1,48 +1,61 @@
 #GET
 GET http://localhost:3000/
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
-GET http://localhost:3000/filter?field=type&value=socks
+GET http://localhost:3000/task/filter?field=type&value=socks
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
-GET http://localhost:3000/upload/optimize?filename=31305f3c-c6a1-4ead-baa4-7801a52ce825.json
-
-###
-
-GET http://localhost:3000/highest_price
-
-###
-
-GET http://localhost:3000/modify
+GET http://localhost:3000/products/upload/optimize?filename=31305f3c-c6a1-4ead-baa4-7801a52ce825.json
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 
-GET http://localhost:3000/swap
+GET http://localhost:3000/task/highest_price
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 
-GET http://localhost:3000/sales_callbacks
+GET http://localhost:3000/task/modify
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 
-GET http://localhost:3000/sales_promise
+GET http://localhost:3000/task/swap
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 
-GET http://localhost:3000/sales_async
+GET http://localhost:3000/sales/sales_callbacks
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 
-GET http://localhost:3000/get_files
+GET http://localhost:3000/sales/sales_promise
+authorization: Basic TWFzdGVyczpBY2FkZW15
+
+###
+
+GET http://localhost:3000/sales/sales_async
+authorization: Basic TWFzdGVyczpBY2FkZW15
+
+###
+
+GET http://localhost:3000/products/get_files
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 
 GET http://localhost:3000/asdasd
+authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 #POST
 
-POST Http://localhost:3000/rewrite
+POST Http://localhost:3000/task/rewrite
+authorization: Basic TWFzdGVyczpBY2FkZW15
+Content-Type: application/json
 
 [
     {"type":"socks","color":"red","quantity":10,"priceForPair":"$3"},
