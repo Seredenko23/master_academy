@@ -1,9 +1,14 @@
 /* eslint-disable no-restricted-globals */
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
+const fs = require('fs');
 const { readdir, stat } = require('fs').promises;
+const { initializeAutomaticOptimization } = require('./optimization');
+const { optimizedDirectory, uploadDirectory, optimizationTime } = require('../config');
 
 const promisifiedPipeline = promisify(pipeline);
+
+let optimizationJob;
 
 Array.prototype.myMap = function (callback) {
   const newArr = [];
@@ -87,6 +92,35 @@ async function getFilesInfo(path) {
   return Promise.all(files);
 }
 
+function initializeGracefulShutdown(server) {
+  function shutdownHandler(error) {
+    if (error) console.log('ERROR: ', error);
+    console.log('\nServer is closing...');
+    optimizationJob.cancel();
+    server.close(() => {
+      console.log('Server closed!');
+      process.exit();
+    });
+  }
+
+  process.on('SIGINT', shutdownHandler);
+  process.on('SIGTERM', shutdownHandler);
+
+  process.on('uncaughtException', shutdownHandler);
+  process.on('unhandledRejection', shutdownHandler);
+}
+
+function checkDirectories() {
+  if (!fs.existsSync(uploadDirectory)) fs.mkdirSync(uploadDirectory);
+  if (!fs.existsSync(optimizedDirectory)) fs.mkdirSync(optimizedDirectory);
+}
+
+function prepareServer(server) {
+  checkDirectories(server);
+  initializeGracefulShutdown(server);
+  optimizationJob = initializeAutomaticOptimization('./upload', optimizationTime);
+}
+
 module.exports = {
   getRndInteger,
   defineAmountOfSales,
@@ -94,4 +128,5 @@ module.exports = {
   transformCsvToJson,
   promisifiedPipeline,
   getFilesInfo,
+  prepareServer,
 };

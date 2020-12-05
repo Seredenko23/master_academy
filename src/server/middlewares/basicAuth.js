@@ -6,9 +6,9 @@ function basicAuth(req, res, next) {
   if (login === baseLogin && password === basePassword) {
     return next();
   }
-  const e = new Error('Authorization required!');
-  e.name = 'AuthorizationError';
-  throw e;
+  const err = new Error('Authorization required!');
+  err.name = 'AuthorizationError';
+  throw err;
 }
 
 module.exports = basicAuth;

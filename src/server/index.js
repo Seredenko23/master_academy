@@ -1,8 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const task = require('./router/task');
-const sales = require('./router/sales');
-const products = require('./router/products');
+const { task, sales, products } = require('./router');
 const auth = require('./middlewares/basicAuth');
 const errorHandler = require('./middlewares/errorHandler');
 
