@@ -6,7 +6,7 @@ const { prepareServer } = require('./services/utils');
 const server = http.createServer(app);
 
 async function boot() {
-  prepareServer(server);
+  await prepareServer(server);
   app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
   });

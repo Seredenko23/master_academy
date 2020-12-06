@@ -2,6 +2,7 @@
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
 const fs = require('fs');
+const { testConnection } = require('../db');
 const { initializeAutomaticOptimization } = require('./optimization');
 const { optimizedDirectory, uploadDirectory, optimizationTime } = require('../config');
 
@@ -104,10 +105,16 @@ function checkDirectories() {
   if (!fs.existsSync(optimizedDirectory)) fs.mkdirSync(optimizedDirectory);
 }
 
-function prepareServer(server) {
-  checkDirectories(server);
-  initializeGracefulShutdown(server);
-  optimizationJob = initializeAutomaticOptimization('./upload', optimizationTime);
+async function prepareServer(server) {
+  try {
+    await testConnection();
+    checkDirectories(server);
+    initializeGracefulShutdown(server);
+    optimizationJob = initializeAutomaticOptimization('./upload', optimizationTime);
+  } catch (error) {
+    console.error(`ERROR: ${error.message}`);
+    throw error;
+  }
 }
 
 module.exports = {

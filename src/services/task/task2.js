@@ -1,16 +1,15 @@
-function getHighetPriceProduct(products) {
+function getHighestPriceProduct(products) {
   let result;
   let max = 0;
   products.forEach((product) => {
     const price = product.price || product.priceForPair;
     const quantity = product.quantity || 0;
-    const totalPrice = +price.slice(1) * quantity;
-    if (totalPrice > max) {
+    if (price * quantity > max) {
       result = product;
-      max = totalPrice;
+      max = price;
     }
   });
   return result;
 }
 
-module.exports = getHighetPriceProduct;
+module.exports = getHighestPriceProduct;

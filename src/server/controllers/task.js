@@ -1,28 +1,41 @@
-const fs = require('fs');
-const path = require('path');
 const { task1: filter, task2: highestPrice, task3: modify } = require('../../services/task');
-const json = require('../../../data.json');
+const { createProduct, getAllProducts } = require('../../db');
 
-let store = [];
+const store = [];
 let isStore = false;
 
-function getSource() {
-  return isStore ? store : json;
+async function getSource() {
+  return isStore ? store : getAllProducts();
 }
 
-function getFilteredData(response, queryParams) {
-  const { field, value } = queryParams;
-  const filteredData = filter(getSource(), field, value);
-  response.send(filteredData);
+async function getFilteredData(response, queryParams) {
+  try {
+    const { field, value } = queryParams;
+    const data = await getSource();
+    const filteredData = filter(data, field, value);
+    response.send(filteredData);
+  } catch (error) {
+    throw new Error('Can`t get filtered products');
+  }
 }
 
-function getHighestPrice(response) {
-  const highestPriceProduct = highestPrice(getSource());
-  response.send(highestPriceProduct);
+async function getHighestPrice(response) {
+  try {
+    const data = await getSource();
+    const highestPriceProduct = highestPrice(data);
+    response.send(highestPriceProduct);
+  } catch (error) {
+    throw new Error('Can`t get highest price product');
+  }
 }
 
-function getModifyData(response) {
-  response.send(modify(getSource()));
+async function getModifyData(response) {
+  try {
+    const data = await getSource();
+    response.send(modify(data));
+  } catch (error) {
+    throw new Error('Can`t get modified products');
+  }
 }
 
 function notFound(response) {
@@ -34,15 +47,22 @@ function swapSources(response) {
   response.send(`Success`);
 }
 
-function rewriteStore(response, data) {
-  console.log(data);
+async function rewriteStore(response, data) {
+  try {
+    const normalizedData = modify(data);
+    const res = normalizedData.map(async (product) => createProduct(product));
+    response.send(await Promise.all(res));
+  } catch (err) {
+    throw new Error('Can`t create new products');
+  }
+
+  /* console.log(data);
   if (isStore) {
     store = data;
   } else {
-    console.log(__dirname);
     fs.writeFileSync(path.resolve(`${__dirname}../../../../`, 'data.json'), JSON.stringify(data));
   }
-  response.send(getSource());
+  response.send(getSource()); */
 }
 
 module.exports = {
