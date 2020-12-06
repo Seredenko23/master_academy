@@ -1,9 +1,13 @@
 /* eslint-disable no-restricted-globals */
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
-const { readdir, stat } = require('fs').promises;
+const fs = require('fs');
+const { initializeAutomaticOptimization } = require('./optimization');
+const { optimizedDirectory, uploadDirectory, optimizationTime } = require('../config');
 
 const promisifiedPipeline = promisify(pipeline);
+
+let optimizationJob;
 
 Array.prototype.myMap = function (callback) {
   const newArr = [];
@@ -77,14 +81,33 @@ function transformCsvToJson() {
   return new Transform({ transform, flush });
 }
 
-async function getFilesInfo(path) {
-  let files = await readdir(path);
-  files = files.filter((file) => file.split('.').length >= 2);
-  files = files.map(async (file) => {
-    const { size, birthtime } = await stat(`${path}/${file}`);
-    return { filename: file, size, birthtime };
-  });
-  return Promise.all(files);
+function initializeGracefulShutdown(server) {
+  function shutdownHandler(error) {
+    if (error) console.log('ERROR: ', error);
+    console.log('\nServer is closing...');
+    optimizationJob.cancel();
+    server.close(() => {
+      console.log('Server closed!');
+      process.exit();
+    });
+  }
+
+  process.on('SIGINT', shutdownHandler);
+  process.on('SIGTERM', shutdownHandler);
+
+  process.on('uncaughtException', shutdownHandler);
+  process.on('unhandledRejection', shutdownHandler);
+}
+
+function checkDirectories() {
+  if (!fs.existsSync(uploadDirectory)) fs.mkdirSync(uploadDirectory);
+  if (!fs.existsSync(optimizedDirectory)) fs.mkdirSync(optimizedDirectory);
+}
+
+function prepareServer(server) {
+  checkDirectories(server);
+  initializeGracefulShutdown(server);
+  optimizationJob = initializeAutomaticOptimization('./upload', optimizationTime);
 }
 
 module.exports = {
@@ -92,5 +115,6 @@ module.exports = {
   defineAmountOfSales,
   repeatPromiseUntilResolved,
   transformCsvToJson,
-  getFilesInfo,
+  promisifiedPipeline,
+  prepareServer,
 };

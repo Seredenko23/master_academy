@@ -1,9 +1,9 @@
 /* eslint-disable no-return-await */
 const { createInterface } = require('readline');
-const { createReadStream, createWriteStream } = require('fs');
-const { unlink } = require('fs').promises;
 const schedule = require('node-schedule');
-const { getFilesInfo } = require('./utils');
+const { unlink } = require('fs').promises;
+const { createReadStream, createWriteStream } = require('fs');
+const { getFilesInfo } = require('./files');
 
 async function defineUnique(line, store) {
   if (line === '[' || line === ']') return;
@@ -56,4 +56,4 @@ function initializeAutomaticOptimization(path, time) {
     );
   });
 }
-module.exports = { defineUnique, optimization, initializeAutomaticOptimization };
+module.exports = { getFilesInfo, defineUnique, optimization, initializeAutomaticOptimization };
