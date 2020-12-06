@@ -2,7 +2,6 @@
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
 const fs = require('fs');
-const { readdir, stat } = require('fs').promises;
 const { initializeAutomaticOptimization } = require('./optimization');
 const { optimizedDirectory, uploadDirectory, optimizationTime } = require('../config');
 
@@ -82,16 +81,6 @@ function transformCsvToJson() {
   return new Transform({ transform, flush });
 }
 
-async function getFilesInfo(path) {
-  let files = await readdir(path);
-  files = files.filter((file) => file.split('.').length >= 2);
-  files = files.map(async (file) => {
-    const { size, birthtime } = await stat(`${path}/${file}`);
-    return { filename: file, size, birthtime };
-  });
-  return Promise.all(files);
-}
-
 function initializeGracefulShutdown(server) {
   function shutdownHandler(error) {
     if (error) console.log('ERROR: ', error);
@@ -127,6 +116,5 @@ module.exports = {
   repeatPromiseUntilResolved,
   transformCsvToJson,
   promisifiedPipeline,
-  getFilesInfo,
   prepareServer,
 };

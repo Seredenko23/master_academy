@@ -1,27 +1,27 @@
 const { Router } = require('express');
 const asyncHandler = require('express-async-handler');
-const { productsControlelr } = require('../controllers');
+const { productsController } = require('../controllers');
 
 const products = Router();
 
 products.put(
   '/upload',
   asyncHandler(async (req, res) => {
-    await productsControlelr.uploadCSVFile(req, res);
+    await productsController.uploadCSVFile(req, res);
   }),
 );
 
 products.get(
   '/get_files',
   asyncHandler(async (req, res) => {
-    await productsControlelr.getFiles(res);
+    await productsController.getFiles(res);
   }),
 );
 
 products.get(
   '/upload/optimize',
   asyncHandler(async (req, res) => {
-    await productsControlelr.optimizeFile(res, req.query);
+    await productsController.optimizeFile(res, req.query);
   }),
 );
 

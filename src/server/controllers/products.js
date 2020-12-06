@@ -2,8 +2,9 @@ const fs = require('fs');
 const { createGunzip } = require('zlib');
 const uuid = require('uuid');
 const { optimization } = require('../../services/optimization');
+const { getFilesInfo } = require('../../services/files');
 
-const { transformCsvToJson, promisifiedPipeline, getFilesInfo } = require('../../services/utils');
+const { transformCsvToJson, promisifiedPipeline } = require('../../services/utils');
 
 async function getFiles(response) {
   try {
@@ -53,7 +54,6 @@ async function uploadCSVFile(request, response) {
   if (request.headers['content-type'] === 'application/gzip') throw new Error('Wrong file!');
   try {
     await uploadCSV(request, response);
-    response.statusCode = 202;
     response.status(202).end();
   } catch (err) {
     console.log('Failed to load CSV', err);

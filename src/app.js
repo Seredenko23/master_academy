@@ -1,14 +1,13 @@
+const http = require('http');
 const app = require('./server');
 const { port } = require('./config');
 const { prepareServer } = require('./services/utils');
 
-const { initializeAutomaticOptimization } = require('./services/optimization');
-
-let server;
+const server = http.createServer(app);
 
 async function boot() {
   prepareServer(server);
-  server = app.listen(port, () => {
+  app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
   });
 }
