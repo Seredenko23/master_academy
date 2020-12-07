@@ -103,6 +103,21 @@ async function getAllProducts() {
   }
 }
 
+async function getProductsByParams(product) {
+  try {
+    const { quantity, price, color, type } = product;
+    const res = await client.query(
+      `UPDATE products SET quantity = quantity + $1 WHERE price = $2 AND color = $3 AND type = $4 RETURNING *`,
+      [quantity, price, color, type],
+    );
+
+    return res.rows[0];
+  } catch (err) {
+    console.error(err.message || err);
+    throw err;
+  }
+}
+
 module.exports = {
   testConnection,
   closeDatabase,
@@ -111,4 +126,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getAllProducts,
+  getProductsByParams,
 };

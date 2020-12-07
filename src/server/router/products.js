@@ -11,18 +11,4 @@ products.put(
   }),
 );
 
-products.get(
-  '/get_files',
-  asyncHandler(async (req, res) => {
-    await productsController.getFiles(res);
-  }),
-);
-
-products.get(
-  '/upload/optimize',
-  asyncHandler(async (req, res) => {
-    await productsController.optimizeFile(res, req.query);
-  }),
-);
-
 module.exports = products;

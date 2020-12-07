@@ -55,14 +55,6 @@ async function rewriteStore(response, data) {
   } catch (err) {
     throw new Error('Can`t create new products');
   }
-
-  /* console.log(data);
-  if (isStore) {
-    store = data;
-  } else {
-    fs.writeFileSync(path.resolve(`${__dirname}../../../../`, 'data.json'), JSON.stringify(data));
-  }
-  response.send(getSource()); */
 }
 
 module.exports = {

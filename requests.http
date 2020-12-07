@@ -7,10 +7,6 @@ GET http://localhost:3000/task/filter?field=type&value=socks
 authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
-GET http://localhost:3000/products/upload/optimize?filename=31305f3c-c6a1-4ead-baa4-7801a52ce825.json
-authorization: Basic TWFzdGVyczpBY2FkZW15
-
-###
 
 GET http://localhost:3000/task/highest_price
 authorization: Basic TWFzdGVyczpBY2FkZW15
@@ -38,11 +34,6 @@ authorization: Basic TWFzdGVyczpBY2FkZW15
 ###
 
 GET http://localhost:3000/sales/sales_async
-authorization: Basic TWFzdGVyczpBY2FkZW15
-
-###
-
-GET http://localhost:3000/products/get_files
 authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###

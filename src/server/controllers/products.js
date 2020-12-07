@@ -1,7 +1,5 @@
-const fs = require('fs');
 const { createGunzip } = require('zlib');
-const uuid = require('uuid');
-const { optimization } = require('../../services/optimization');
+const { createOptimizationStream } = require('../../services/optimization');
 const { getFilesInfo } = require('../../services/files');
 
 const { transformCsvToJson, promisifiedPipeline } = require('../../services/utils');
@@ -21,44 +19,25 @@ async function uploadCSV(inputStream) {
   try {
     const gunzip = createGunzip();
 
-    const id = uuid.v4();
-    const filepath = `./upload/${id}.json`;
-    const outputStream = fs.createWriteStream(filepath);
     const csvToJson = transformCsvToJson();
+    const optimization = createOptimizationStream();
 
-    await promisifiedPipeline(inputStream, gunzip, csvToJson, outputStream);
+    await promisifiedPipeline(inputStream, gunzip, csvToJson, optimization);
   } catch (err) {
+    console.error(err.message);
     throw new Error('CSV pipeline failed');
   }
 }
 
-async function optimizeFile(response, query) {
-  const { filename } = query;
-  const filepath = './upload';
-
-  optimization(`${filepath}/${filename}`, (e, uniqueProduct) => {
-    if (e) {
-      console.log('ERROR: ', e.message);
-      return;
-    }
-    const productsOptimized = Object.values(uniqueProduct);
-    const writableStream = fs.createWriteStream(`./upload/optimized/${filename}`);
-    writableStream.write(JSON.stringify(productsOptimized));
-    const totalQuantity = productsOptimized.reduce((acc, red) => acc + red.quantity, 0);
-    console.log('Total quantity equal ', totalQuantity);
-  });
-  response.status(202).end();
-}
-
 async function uploadCSVFile(request, response) {
-  if (request.headers['content-type'] === 'application/gzip') throw new Error('Wrong file!');
+  if (request.headers['content-type'] !== 'application/gzip') throw new Error('Wrong file!');
   try {
     await uploadCSV(request, response);
     response.status(202).end();
   } catch (err) {
     console.log('Failed to load CSV', err);
-    response.status(500).send({ status: 'error' });
+    throw new Error('Failed to load CSV');
   }
 }
 
-module.exports = { optimizeFile, uploadCSVFile, getFiles };
+module.exports = { uploadCSVFile, getFiles };

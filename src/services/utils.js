@@ -1,10 +1,7 @@
 /* eslint-disable no-restricted-globals */
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
-const fs = require('fs');
 const { testConnection } = require('../db');
-const { initializeAutomaticOptimization } = require('./optimization');
-const { optimizedDirectory, uploadDirectory, optimizationTime } = require('../config');
 
 const promisifiedPipeline = promisify(pipeline);
 
@@ -66,27 +63,22 @@ function transformCsvToJson() {
     if (isFirst) {
       isFirst = !isFirst;
       keys = csvArray.shift().split(',');
-      const str = generateJsonStr(csvArray, keys);
-      callback(null, `[${str.slice(1)}`);
+      const obj = generateJsonStr(csvArray, keys).slice(1);
+      callback(null, `[${obj}]`);
       return;
     }
 
-    const str = generateJsonStr(csvArray, keys);
-    callback(null, str);
+    const obj = generateJsonStr(csvArray, keys).slice(1);
+    callback(null, `[${obj}]`);
   };
 
-  const flush = (callback) => {
-    callback(null, '\n]');
-  };
-
-  return new Transform({ transform, flush });
+  return new Transform({ transform });
 }
 
 function initializeGracefulShutdown(server) {
   function shutdownHandler(error) {
     if (error) console.log('ERROR: ', error);
     console.log('\nServer is closing...');
-    optimizationJob.cancel();
     server.close(() => {
       console.log('Server closed!');
       process.exit();
@@ -100,17 +92,10 @@ function initializeGracefulShutdown(server) {
   process.on('unhandledRejection', shutdownHandler);
 }
 
-function checkDirectories() {
-  if (!fs.existsSync(uploadDirectory)) fs.mkdirSync(uploadDirectory);
-  if (!fs.existsSync(optimizedDirectory)) fs.mkdirSync(optimizedDirectory);
-}
-
 async function prepareServer(server) {
   try {
     await testConnection();
-    checkDirectories(server);
     initializeGracefulShutdown(server);
-    optimizationJob = initializeAutomaticOptimization('./upload', optimizationTime);
   } catch (error) {
     console.error(`ERROR: ${error.message}`);
     throw error;
