@@ -1,6 +1,7 @@
 const { createGunzip } = require('zlib');
 const { createOptimizationStream } = require('../../services/optimization');
 const { getFilesInfo } = require('../../services/files');
+const { deleteProduct, getProduct } = require('../../db');
 
 const { transformCsvToJson, promisifiedPipeline } = require('../../services/utils');
 
@@ -40,4 +41,28 @@ async function uploadCSVFile(request, response) {
   }
 }
 
-module.exports = { uploadCSVFile, getFiles };
+async function deleteProductFromDB(request, response) {
+  try {
+    const { id } = request.params;
+    if (!id) throw new Error('Id required!');
+    await deleteProduct(id);
+    response.status(202).end();
+  } catch (error) {
+    console.log('ERROR: can`t delete product');
+    throw error;
+  }
+}
+
+async function getProductFromDB(request, response) {
+  try {
+    const { id } = request.params;
+    if (!id) throw new Error('Id required!');
+    const res = await getProduct(id);
+    response.send(res);
+  } catch (error) {
+    console.log('ERROR: can`t delete product');
+    throw error;
+  }
+}
+
+module.exports = { uploadCSVFile, getFiles, deleteProductFromDB, getProductFromDB };

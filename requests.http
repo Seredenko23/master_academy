@@ -42,6 +42,11 @@ GET http://localhost:3000/asdasd
 authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
+
+GET http://localhost:3000/products/get/56
+authorization: Basic TWFzdGVyczpBY2FkZW15
+
+###
 #POST
 
 POST Http://localhost:3000/task/rewrite
@@ -53,3 +58,9 @@ Content-Type: application/json
     {"type":"socks","color":"green","priceForPair":"$10"},
     {"type":"hat","color":"blue","quantity":8,"price":"$6"}
 ]
+###
+#DELETE
+
+DELETE Http://localhost:3000/products/delete/55
+
+###
