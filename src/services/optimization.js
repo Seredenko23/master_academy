@@ -22,8 +22,12 @@ function createOptimizationStream() {
   const flush = (callback) => {
     const data = Object.values(uniqueProduct);
     data.forEach(async (product) => {
-      const res = await getProductsByParams(product);
-      if (!res) await createProduct(product);
+      try {
+        const res = await getProductsByParams(product);
+        if (!res) await createProduct(product);
+      } catch (e) {
+        console.log(e);
+      }
     });
     callback(null);
   };
