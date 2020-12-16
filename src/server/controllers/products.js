@@ -2,6 +2,7 @@ const { createGunzip } = require('zlib');
 const { createOptimizationStream } = require('../../services/optimization');
 const { getFilesInfo } = require('../../services/files');
 const { deleteProduct, getProduct } = require('../../db');
+const { generateError } = require('../../services/error');
 
 const { transformCsvToJson, promisifiedPipeline } = require('../../services/utils');
 
@@ -12,7 +13,7 @@ async function getFiles(response) {
 
     response.send({ optimized: optimizedFiles, upload: files });
   } catch (e) {
-    throw new Error('Can`t get files');
+    throw generateError('Can`t get files');
   }
 }
 
@@ -26,25 +27,26 @@ async function uploadCSV(inputStream) {
     await promisifiedPipeline(inputStream, gunzip, csvToJson, optimization);
   } catch (err) {
     console.error(err.message);
-    throw new Error('CSV pipeline failed');
+    throw generateError('CSV pipeline failed');
   }
 }
 
 async function uploadCSVFile(request, response) {
-  if (request.headers['content-type'] !== 'application/gzip') throw new Error('Wrong file!');
+  if (request.headers['content-type'] !== 'application/gzip')
+    throw generateError('Wrong file!', 'BadRequestError');
   try {
     await uploadCSV(request, response);
     response.status(202).end();
   } catch (err) {
     console.log('Failed to load CSV', err);
-    throw new Error('Failed to load CSV');
+    throw generateError('Failed to load CSV');
   }
 }
 
 async function deleteProductFromDB(request, response) {
   try {
     const { id } = request.params;
-    if (!id) throw new Error('Id required!');
+    if (!id) throw generateError('Id required!', 'BadRequestError');
     await deleteProduct(id);
     response.status(202).end();
   } catch (error) {
@@ -56,11 +58,11 @@ async function deleteProductFromDB(request, response) {
 async function getProductFromDB(request, response) {
   try {
     const { id } = request.params;
-    if (!id) throw new Error('Id required!');
+    if (!id) throw generateError('Id required!', 'BadRequestError');
     const res = await getProduct(id);
     response.send(res);
   } catch (error) {
-    console.log('ERROR: can`t delete product');
+    console.log('ERROR: can`t get product');
     throw error;
   }
 }

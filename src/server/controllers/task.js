@@ -1,5 +1,6 @@
 const { task1: filter, task2: highestPrice, task3: modify } = require('../../services/task');
 const { createProduct, getAllProducts } = require('../../db');
+const { generateError } = require('../../services/error');
 
 const store = [];
 let isStore = false;
@@ -15,7 +16,7 @@ async function getFilteredData(response, queryParams) {
     const filteredData = filter(data, field, value);
     response.send(filteredData);
   } catch (error) {
-    throw new Error('Can`t get filtered products');
+    throw generateError('Can`t get filtered products');
   }
 }
 
@@ -25,7 +26,7 @@ async function getHighestPrice(response) {
     const highestPriceProduct = highestPrice(data);
     response.send(highestPriceProduct);
   } catch (error) {
-    throw new Error('Can`t get highest price product');
+    throw generateError('Can`t get highest price product');
   }
 }
 
@@ -34,7 +35,7 @@ async function getModifyData(response) {
     const data = await getSource();
     response.send(modify(data));
   } catch (error) {
-    throw new Error('Can`t get modified products');
+    throw generateError('Can`t get modified products');
   }
 }
 
@@ -53,7 +54,7 @@ async function rewriteStore(response, data) {
     const res = normalizedData.map(async (product) => createProduct(product));
     response.send(await Promise.all(res));
   } catch (err) {
-    throw new Error('Can`t create new products');
+    throw generateError('Can`t create new products');
   }
 }
 

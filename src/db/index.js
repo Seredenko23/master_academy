@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 const { db: dbConfig } = require('../config');
+const { generateError } = require('../services/error');
 
 const client = new Pool(dbConfig);
 
@@ -20,8 +21,8 @@ async function closeDatabase() {
 
 async function createProduct({ type, color, price = 0, quantity = 1 }) {
   try {
-    if (!type) throw new Error('No product type defined');
-    if (!color) throw new Error('No product color defined');
+    if (!type) throw generateError('No product type defined', 'BadRequestError');
+    if (!color) throw generateError('No product color defined', 'BadRequestError');
     const timestamp = new Date();
 
     const res = await client.query(
@@ -38,7 +39,7 @@ async function createProduct({ type, color, price = 0, quantity = 1 }) {
 
 async function getProduct(id) {
   try {
-    if (!id) throw new Error('No product id defined');
+    if (!id) throw generateError('No product id defined', 'BadRequestError');
 
     const res = await client.query('SELECT * FROM products WHERE id = $1 AND deleted_at IS NULL', [
       id,
@@ -53,7 +54,7 @@ async function getProduct(id) {
 
 async function updateProduct({ id, ...product }) {
   try {
-    if (!id) throw new Error('No product id defined');
+    if (!id) throw generateError('No product id defined', 'BadRequestError');
 
     const query = [];
     const values = [];
@@ -63,7 +64,7 @@ async function updateProduct({ id, ...product }) {
       values.push(productData[1]);
     });
 
-    if (!values.length) throw new Error('Nothing to update');
+    if (!values.length) throw generateError('Nothing to update', 'BadRequestError');
 
     const res = await client.query(
       `UPDATE products SET ${query.join(',')} WHERE id = $${values.length} RETURNING *`,
@@ -79,7 +80,7 @@ async function updateProduct({ id, ...product }) {
 
 async function deleteProduct(id) {
   try {
-    if (!id) throw new Error('No product id defined');
+    if (!id) throw generateError('No product id defined', 'BadRequestError');
 
     const timestamp = new Date();
 
@@ -103,7 +104,7 @@ async function getAllProducts() {
   }
 }
 
-async function getProductsByParams(product) {
+async function updateProductsByParams(product) {
   try {
     const { quantity, price, color, type } = product;
     const res = await client.query(
@@ -126,5 +127,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getAllProducts,
-  getProductsByParams,
+  updateProductsByParams,
 };

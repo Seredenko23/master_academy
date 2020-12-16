@@ -1,7 +1,7 @@
 /* eslint-disable no-return-await */
 const { Transform } = require('stream');
 const { getFilesInfo } = require('./files');
-const { getProductsByParams, createProduct } = require('../db');
+const { updateProductsByParams, createProduct } = require('../db');
 
 async function defineUnique(obj, store) {
   let str = Object.entries(obj);
@@ -22,7 +22,7 @@ function createOptimizationStream() {
   const flush = (callback) => {
     const data = Object.values(uniqueProduct);
     data.forEach(async (product) => {
-      const res = await getProductsByParams(product);
+      const res = await updateProductsByParams(product);
       if (!res) await createProduct(product);
     });
     callback(null);
