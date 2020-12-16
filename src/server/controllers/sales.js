@@ -1,6 +1,7 @@
 const { repeatPromiseUntilResolved, defineAmountOfSales } = require('../../services/utils');
 const { getSale, getSalePromisified } = require('../../services/sales');
 const { getSource } = require('./task');
+const { generateError } = require('../../services/error');
 
 async function getSalesCallbacks(response) {
   const data = await getSource();
@@ -51,7 +52,7 @@ function getSalesPromise(response) {
         response.send(result);
       })
       .catch(() => {
-        throw new Error('Cant generate sales');
+        throw generateError('Cant generate sales');
       });
   });
 }
@@ -71,7 +72,7 @@ async function getSalesAsync(response) {
     data = await Promise.all(data);
     response.send(data);
   } catch (e) {
-    throw new Error('Cant generate sales');
+    throw generateError('Cant generate sales');
   }
 }
 
