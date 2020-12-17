@@ -1,4 +1,5 @@
 const { login, password } = require('../../config');
+const { generateError } = require('../../services/error');
 
 function basicAuth(req, res, next) {
   const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
@@ -6,8 +7,7 @@ function basicAuth(req, res, next) {
   if (login === baseLogin && password === basePassword) {
     return next();
   }
-  const err = new Error('Authorization required!');
-  err.name = 'AuthorizationError';
+  const err = generateError('Authorization required!', 'AuthorizationError');
   throw err;
 }
 

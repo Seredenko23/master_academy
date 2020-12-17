@@ -1,8 +1,8 @@
-const fs = require('fs');
 const { createGunzip } = require('zlib');
-const uuid = require('uuid');
-const { optimization } = require('../../services/optimization');
+const { createOptimizationStream } = require('../../services/optimization');
 const { getFilesInfo } = require('../../services/files');
+const { deleteProduct, getProduct } = require('../../db');
+const { generateError } = require('../../services/error');
 
 const { transformCsvToJson, promisifiedPipeline } = require('../../services/utils');
 
@@ -13,7 +13,7 @@ async function getFiles(response) {
 
     response.send({ optimized: optimizedFiles, upload: files });
   } catch (e) {
-    throw new Error('Can`t get files');
+    throw generateError('Can`t get files');
   }
 }
 
@@ -21,44 +21,50 @@ async function uploadCSV(inputStream) {
   try {
     const gunzip = createGunzip();
 
-    const id = uuid.v4();
-    const filepath = `./upload/${id}.json`;
-    const outputStream = fs.createWriteStream(filepath);
     const csvToJson = transformCsvToJson();
+    const optimization = createOptimizationStream();
 
-    await promisifiedPipeline(inputStream, gunzip, csvToJson, outputStream);
+    await promisifiedPipeline(inputStream, gunzip, csvToJson, optimization);
   } catch (err) {
-    throw new Error('CSV pipeline failed');
+    console.error(err.message);
+    throw generateError('CSV pipeline failed');
   }
 }
 
-async function optimizeFile(response, query) {
-  const { filename } = query;
-  const filepath = './upload';
-
-  optimization(`${filepath}/${filename}`, (e, uniqueProduct) => {
-    if (e) {
-      console.log('ERROR: ', e.message);
-      return;
-    }
-    const productsOptimized = Object.values(uniqueProduct);
-    const writableStream = fs.createWriteStream(`./upload/optimized/${filename}`);
-    writableStream.write(JSON.stringify(productsOptimized));
-    const totalQuantity = productsOptimized.reduce((acc, red) => acc + red.quantity, 0);
-    console.log('Total quantity equal ', totalQuantity);
-  });
-  response.status(202).end();
-}
-
 async function uploadCSVFile(request, response) {
-  if (request.headers['content-type'] === 'application/gzip') throw new Error('Wrong file!');
+  if (request.headers['content-type'] !== 'application/gzip')
+    throw generateError('Wrong file!', 'BadRequestError');
   try {
     await uploadCSV(request, response);
     response.status(202).end();
   } catch (err) {
     console.log('Failed to load CSV', err);
-    response.status(500).send({ status: 'error' });
+    throw generateError('Failed to load CSV');
   }
 }
 
-module.exports = { optimizeFile, uploadCSVFile, getFiles };
+async function deleteProductFromDB(request, response) {
+  try {
+    const { id } = request.params;
+    if (!id) throw generateError('Id required!', 'BadRequestError');
+    await deleteProduct(id);
+    response.status(202).end();
+  } catch (error) {
+    console.log('ERROR: can`t delete product');
+    throw error;
+  }
+}
+
+async function getProductFromDB(request, response) {
+  try {
+    const { id } = request.params;
+    if (!id) throw generateError('Id required!', 'BadRequestError');
+    const res = await getProduct(id);
+    response.send(res);
+  } catch (error) {
+    console.log('ERROR: can`t get product');
+    throw error;
+  }
+}
+
+module.exports = { uploadCSVFile, getFiles, deleteProductFromDB, getProductFromDB };

@@ -1,9 +1,10 @@
 const { repeatPromiseUntilResolved, defineAmountOfSales } = require('../../services/utils');
 const { getSale, getSalePromisified } = require('../../services/sales');
 const { getSource } = require('./task');
+const { generateError } = require('../../services/error');
 
-function getSalesCallbacks(response) {
-  const data = getSource();
+async function getSalesCallbacks(response) {
+  const data = await getSource();
   const newSales = [];
   data.myMap((prod) => getSale(callback, prod));
 
@@ -30,31 +31,35 @@ function getSalesCallbacks(response) {
 }
 
 function getSalesPromise(response) {
-  const data = getSource().myMap((product) => {
-    const amount = defineAmountOfSales(product);
-    const sales = [];
-    for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
-    return Promise.all(sales)
-      .then((salesArray) => {
-        product.sale = salesArray.map((sale) => (100 - sale) / 100).reduce((acc, red) => acc * red);
-        return product;
+  getSource().then((products) => {
+    const data = products.myMap((product) => {
+      const amount = defineAmountOfSales(product);
+      const sales = [];
+      for (let i = 0; i < amount; i++) sales.push(repeatPromiseUntilResolved(getSalePromisified));
+      return Promise.all(sales)
+        .then((salesArray) => {
+          product.sale = salesArray
+            .map((sale) => (100 - sale) / 100)
+            .reduce((acc, red) => acc * red);
+          return product;
+        })
+        .catch(() => {
+          response.status(500).send({ status: 'error' });
+        });
+    });
+    Promise.all(data)
+      .then((result) => {
+        response.send(result);
       })
       .catch(() => {
-        response.status(500).send({ status: 'error' });
+        throw generateError('Cant generate sales');
       });
   });
-  Promise.all(data)
-    .then((result) => {
-      response.send(result);
-    })
-    .catch(() => {
-      throw new Error('Cant generate sales');
-    });
 }
 
 async function getSalesAsync(response) {
   try {
-    let data = getSource();
+    let data = await getSource();
     data = data.myMap(async (product) => {
       const amount = defineAmountOfSales(product);
       let sales = [];
@@ -67,7 +72,7 @@ async function getSalesAsync(response) {
     data = await Promise.all(data);
     response.send(data);
   } catch (e) {
-    throw new Error('Cant generate sales');
+    throw generateError('Cant generate sales');
   }
 }
 

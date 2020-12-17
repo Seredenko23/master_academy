@@ -11,17 +11,17 @@ products.put(
   }),
 );
 
-products.get(
-  '/get_files',
+products.delete(
+  '/delete/:id',
   asyncHandler(async (req, res) => {
-    await productsController.getFiles(res);
+    await productsController.deleteProductFromDB(req, res);
   }),
 );
 
 products.get(
-  '/upload/optimize',
+  '/get/:id',
   asyncHandler(async (req, res) => {
-    await productsController.optimizeFile(res, req.query);
+    await productsController.getProductFromDB(req, res);
   }),
 );
 
