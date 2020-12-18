@@ -8,7 +8,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(auth);
+app.use(auth);
 
 app.use('/task', task);
 app.use('/sales', sales);
