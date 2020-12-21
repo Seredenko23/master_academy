@@ -43,7 +43,7 @@ authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
 
-GET http://localhost:3000/products/get/14
+GET http://localhost:3000/products/get/23
 authorization: Basic TWFzdGVyczpBY2FkZW15
 
 ###
@@ -61,6 +61,7 @@ Content-Type: application/json
 ###
 #DELETE
 
-DELETE Http://localhost:3000/products/delete/1
-
+DELETE Http://localhost:3000/products/delete/23
+authorization: Basic TWFzdGVyczpBY2FkZW15
+Content-Type: application/json
 ###
