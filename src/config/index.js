@@ -7,6 +7,8 @@ const config = {
   password: process.env.PASSWORD || '',
   uploadDirectory: process.env.UPLOAD_DIRECTORY || './upload',
   optimizedDirectory: process.env.OPTIMIZED_DIRECTORY || './upload/optimized',
+  accessSecret: process.env.ACCESS_TOKEN_SECRET || '',
+  refreshSecret: process.env.REFRESH_TOKEN_SECRET || '',
   db: {
     client: 'postgresql',
     connection: {
