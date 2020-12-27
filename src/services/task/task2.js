@@ -4,9 +4,10 @@ function getHighestPriceProduct(products) {
   products.forEach((product) => {
     const price = product.price || product.priceForPair;
     const quantity = product.quantity || 0;
-    if (price * quantity > max) {
+    const maxPrice = price * quantity;
+    if (maxPrice > max) {
       result = product;
-      max = price;
+      max = maxPrice;
     }
   });
   return result;
