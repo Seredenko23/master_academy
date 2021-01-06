@@ -6,6 +6,7 @@ exports.up = async (knex) => {
     table.uuid('color').notNullable().references('colors.id');
     table.decimal('price').notNullable();
     table.integer('quantity').notNullable();
+    table.integer('weigth').notNullable().defaultTo(1);
     table.timestamp('deleted_at').nullable();
     table.timestamps();
   });
