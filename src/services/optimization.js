@@ -23,6 +23,7 @@ function createOptimizationStream() {
     const data = Object.values(uniqueProduct);
     data.forEach(async (product) => {
       try {
+        delete product.isPair;
         const res = await updateProductsByParams(product);
         if (!res) await createProduct(product);
       } catch (err) {
