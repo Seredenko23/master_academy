@@ -265,6 +265,7 @@ async function getOrderById(orderId) {
         'types.type',
         'colors.color',
         'products.price',
+        'products.weight',
         'order_items.quantity',
       ])
       .from('order_items')
@@ -275,6 +276,38 @@ async function getOrderById(orderId) {
 
     order.products = productsInOrder;
     return order;
+  } catch (err) {
+    console.error(err.message || err);
+    throw err;
+  }
+}
+
+async function decreaseQuantity(id, quantity) {
+  try {
+    if (!id) throw generateError();
+    const [res] = await knex('products')
+      .update({ quantity: knex.raw(`quantity - ??`, [quantity]) })
+      .where({ id })
+      .andWhere('quantity', '>', quantity)
+      .returning('quantity');
+
+    if (!res) throw generateError('Nothing to update', 'BadRequestError');
+    return res;
+  } catch (err) {
+    console.error(err.message || err);
+    throw err;
+  }
+}
+
+async function increaseQuantity(id, quantity) {
+  try {
+    const [res] = await knex('products')
+      .update({ quantity: knex.raw(`quantity + ??`, [quantity]) })
+      .where({ id })
+      .returning('quantity');
+
+    if (!res) throw generateError('Nothing to update', 'BadRequestError');
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -296,6 +329,9 @@ async function addProductToOrder(productId, orderId, quantity = 1) {
   try {
     if (!productId) throw generateError('NO product id defined!', 'BadRequestError');
     if (!orderId) orderId = await createOrder();
+
+    const productQuantity = await decreaseQuantity(productId, quantity);
+    if (!productQuantity) throw generateError('Not enough products!', 'BadRequestError');
 
     const [res] = await knex('order_items')
       .insert({
@@ -326,6 +362,37 @@ async function changeOrderStatus(orderId, status) {
   }
 }
 
+async function cancelOrder(orderId) {
+  try {
+    if (!orderId) throw generateError('NO order id defined!', 'BadRequestError');
+    const order = await getOrderById(orderId);
+
+    await knex('orders').del().where({ id: orderId });
+
+    await order.products.forEach(async (product) => {
+      await increaseQuantity(product.id, product.quantity);
+    });
+
+    return true;
+  } catch (err) {
+    console.error(err.message || err);
+    throw err;
+  }
+}
+async function setCargoRoute(id, { from, to }) {
+  try {
+    if (!from || !to)
+      throw generateError('City sender or city recipient is not defined', 'BadRequestError');
+
+    await knex('orders').update({ from, to }).where({ id });
+
+    return true;
+  } catch (err) {
+    console.error(err.message || err);
+    throw err;
+  }
+}
+
 module.exports = {
   testConnection,
   closeDatabase,
@@ -338,4 +405,6 @@ module.exports = {
   addProductToOrder,
   changeOrderStatus,
   getOrderById,
+  cancelOrder,
+  setCargoRoute,
 };

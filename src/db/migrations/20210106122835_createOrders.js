@@ -5,12 +5,11 @@ exports.up = async (knex) => {
     table.string('from').nullable();
     table.string('to').nullable();
     table.string('status').defaultTo('Opened');
-    table.timestamp('deleted_at').nullable();
     table.timestamps(true, true);
   });
   await knex.schema.createTable('order_items', (table) => {
-    table.uuid('order_id').references('orders.id');
-    table.uuid('product_id').references('products.id');
+    table.uuid('order_id').references('orders.id').onDelete('CASCADE');
+    table.uuid('product_id').references('products.id').onDelete('CASCADE');
     table.integer('quantity').notNullable();
   });
 };

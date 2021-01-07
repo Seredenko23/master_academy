@@ -49,7 +49,15 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc
 
 ###
 
-GET http://localhost:3000/orders/get/fccff04e-b28e-48af-8aec-938e4ba60632
+GET http://localhost:3000/orders/get/e3bbe26a-4065-4977-8b27-e70dc7e7b390
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
+###
+
+GET http://localhost:3000/orders/get_delivery_price/e8588729-378e-4227-b758-3416ca3b2686
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
+###
+
+GET http://localhost:3000/orders/cancel/1c66c636-0732-4187-aa2d-ddfc5f0bf69a
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 #POST
@@ -79,9 +87,8 @@ POST http://localhost:3000/orders/add_product
 Content-Type: application/json
 
 {
-    "orderId": "fccff04e-b28e-48af-8aec-938e4ba60632",
-    "productId": "abb33fe6-d893-45bf-8edf-3ac08d7aaae5",
-    "quantity": 30
+    "productId": "ef95a974-b3f7-47c4-82a2-1c06fc6da3a3",
+    "quantity": 20
 }
 
 ###
@@ -100,6 +107,18 @@ Content-Type: application/json
 
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1MzR9.eOqwj0v6-1N_UE-eSVm38AzQop55hGkSbaWFHxCHuTU"
+}
+
+###
+POST http://localhost:3000/orders/set_route
+Content-Type: application/json
+
+{
+    "id": "e8588729-378e-4227-b758-3416ca3b2686",
+    "addresses": {
+        "from": "Черкаси",
+        "to": "Львів"
+    }
 }
 
 ###
