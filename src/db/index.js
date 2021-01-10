@@ -27,17 +27,13 @@ async function createProduct(product) {
     const typeId = await getType(product.type);
     const colorId = await getColor(product.color);
 
-    const timestamp = new Date();
-
     const modifiedProduct = { ...product };
     modifiedProduct.color = colorId.id;
     modifiedProduct.type = typeId.id;
-    modifiedProduct.created_at = timestamp;
-    modifiedProduct.updated_at = timestamp;
 
-    const res = await knex('products').insert(modifiedProduct).returning('*');
+    const [res] = await knex('products').insert(modifiedProduct).returning('*');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -48,14 +44,14 @@ async function getProduct(id) {
   try {
     if (!id) throw generateError('No product id defined', 'BadRequestError');
 
-    const res = await knex
+    const [res] = await knex
       .select(['products.id', 'products.price', 'products.quantity', 'types.type', 'colors.color'])
       .from('products')
       .innerJoin('types', 'products.type', 'types.id')
       .innerJoin('colors', 'products.color', 'colors.id')
       .where('products.id', id);
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -69,18 +65,15 @@ async function updateProduct({ id, ...product }) {
     const colorId = await getColor(product.color);
     const typeId = await getType(product.type);
 
-    const timestamp = new Date();
-
     product.color = colorId.id;
     product.type = typeId.id;
-    product.updated_at = timestamp;
 
     if (!Object.entries(product).length)
       throw generateError('Nothing to update', 'BadRequestError');
 
-    const res = await knex('products').update(product).where('id', id).returning('*');
+    const [res] = await knex('products').update(product).where({ id }).returning('*');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -93,7 +86,7 @@ async function deleteProduct(id) {
 
     const timestamp = new Date();
 
-    await knex('products').update({ deleted_at: timestamp }).where('id', id);
+    await knex('products').update({ deleted_at: timestamp }).where({ id });
 
     return true;
   } catch (err) {
@@ -122,15 +115,13 @@ async function updateProductsByParams(product) {
     const colorId = await getColor(product.color);
     const typeId = await getType(product.type);
 
-    const timestamp = new Date();
     const modifiedProduct = { ...product };
     modifiedProduct.color = colorId.id;
     modifiedProduct.type = typeId.id;
-    modifiedProduct.updated_at = timestamp;
 
     console.log('modifiedProduct', modifiedProduct);
 
-    const res = await knex('products')
+    const [res] = await knex('products')
       .update({ quantity: knex.raw('quantity + ??', [modifiedProduct.quantity]) })
       .where({
         price: modifiedProduct.price,
@@ -139,7 +130,7 @@ async function updateProductsByParams(product) {
       })
       .returning('*');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -148,13 +139,13 @@ async function updateProductsByParams(product) {
 
 async function getColor(color) {
   try {
-    if (!color) throw new Error('No color defined');
+    if (!color) throw generateError('No color defined', 'BadRequestError');
 
-    const res = await knex('colors').where('color', color);
+    const [res] = await knex('colors').where({ color });
 
-    if (!res[0]) throw new Error('No color defined in db');
+    if (!res) throw new Error('No color defined in db');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -163,13 +154,13 @@ async function getColor(color) {
 
 async function getType(type) {
   try {
-    if (!type) throw new Error('No type defined');
+    if (!type) throw generateError('No type defined', 'BadRequestError');
     console.log('Type', type);
-    const res = await knex('types').where('type', type);
+    const [res] = await knex('types').where({ type });
 
-    if (!res[0]) throw new Error('No type defined in db');
+    if (!res) throw new Error('No type defined in db');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -178,11 +169,11 @@ async function getType(type) {
 
 async function createColor(color) {
   try {
-    if (!color) throw new Error('No color defined');
+    if (!color) throw generateError('No color defined', 'BadRequestError');
 
-    const res = await knex('colors').insert({ color }).returning('*');
+    const [res] = await knex('colors').insert({ color }).returning('*');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -191,11 +182,11 @@ async function createColor(color) {
 
 async function createType(type) {
   try {
-    if (!type) throw new Error('No type defined');
+    if (!type) throw generateError('No type defined', 'BadRequestError');
 
-    const res = await knex('types').insert({ type }).returning('*');
+    const [res] = await knex('types').insert({ type }).returning('*');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -204,9 +195,9 @@ async function createType(type) {
 
 async function deleteColor(id) {
   try {
-    if (!id) throw new Error('No id defined');
+    if (!id) throw generateError('No color id defined', 'BadRequestError');
 
-    await knex('colors').where('id', id).del();
+    await knex('colors').where({ id }).del();
 
     return true;
   } catch (err) {
@@ -217,9 +208,9 @@ async function deleteColor(id) {
 
 async function deleteType(id) {
   try {
-    if (!id) throw new Error('No id defined');
+    if (!id) throw generateError('No type id defined', 'BadRequestError');
 
-    await knex('types').where('id', id).del();
+    await knex('types').where({ id }).del();
 
     return true;
   } catch (err) {
@@ -230,11 +221,11 @@ async function deleteType(id) {
 
 async function updateColor(id, color) {
   try {
-    if (!id) throw new Error('No id defined');
+    if (!id) throw generateError('No color id defined', 'BadRequestError');
 
-    const res = await knex('colors').update({ color }).where('id', id).returning('*');
+    const [res] = await knex('colors').update({ color }).where({ id }).returning('*');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
@@ -243,11 +234,11 @@ async function updateColor(id, color) {
 
 async function updateType(id, type) {
   try {
-    if (!id) throw new Error('No id defined');
+    if (!id) throw generateError('No type id defined', 'BadRequestError');
 
-    const res = await knex('types').update({ type }).where('id', id).returning('*');
+    const [res] = await knex('types').update({ type }).where({ id }).returning('*');
 
-    return res[0];
+    return res;
   } catch (err) {
     console.error(err.message || err);
     throw err;
