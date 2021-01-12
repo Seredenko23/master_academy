@@ -1,55 +1,54 @@
 #GET
 GET http://localhost:3000/
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 GET http://localhost:3000/task/filter?field=type&value=socks
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
 GET http://localhost:3000/task/highest_price
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
 GET http://localhost:3000/task/modify
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
 GET http://localhost:3000/task/swap
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
 GET http://localhost:3000/sales/sales_callbacks
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
 GET http://localhost:3000/sales/sales_promise
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
 GET http://localhost:3000/sales/sales_async
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
 GET http://localhost:3000/asdasd
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 ###
 
-GET http://localhost:3000/products/get/23
-authorization: Basic TWFzdGVyczpBY2FkZW15
-
+GET http://localhost:3000/products/get/b1c65c70-8eb-429e-b38b-b1a5b7f0c86e
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 #POST
 
-POST Http://localhost:3000/task/rewrite
+POST http://localhost:3000/task/rewrite
 authorization: Basic TWFzdGVyczpBY2FkZW15
 Content-Type: application/json
 
@@ -58,10 +57,30 @@ Content-Type: application/json
     {"type":"socks","color":"green","priceForPair":"$10"},
     {"type":"hat","color":"blue","quantity":8,"price":"$6"}
 ]
+
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "username": "Masters",
+    "password": "Academy" 
+}
+
+###
+POST http://localhost:3000/auth/refresh
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1MzR9.eOqwj0v6-1N_UE-eSVm38AzQop55hGkSbaWFHxCHuTU"
+}
+
 ###
 #DELETE
 
 DELETE Http://localhost:3000/products/delete/23
-authorization: Basic TWFzdGVyczpBY2FkZW15
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
+
 Content-Type: application/json
 ###

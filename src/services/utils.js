@@ -1,6 +1,8 @@
 /* eslint-disable no-restricted-globals */
 const { promisify } = require('util');
 const { pipeline, Transform } = require('stream');
+const jwt = require('jsonwebtoken');
+const { accessSecret, refreshSecret } = require('../config');
 const { testConnection } = require('../db');
 
 const promisifiedPipeline = promisify(pipeline);
@@ -100,6 +102,14 @@ async function prepareServer(server) {
   }
 }
 
+function generateAccessToken(user) {
+  return jwt.sign(user, accessSecret, { expiresIn: '30s' });
+}
+
+function generateRefreshToken(user) {
+  return jwt.sign(user, refreshSecret);
+}
+
 module.exports = {
   getRndInteger,
   defineAmountOfSales,
@@ -107,4 +117,6 @@ module.exports = {
   transformCsvToJson,
   promisifiedPipeline,
   prepareServer,
+  generateAccessToken,
+  generateRefreshToken,
 };
