@@ -6,7 +6,7 @@ const {
   getOrderById,
   cancelOrder,
   setCargoRoute,
-} = require('../../db/index');
+} = require('../../db/wrappers/order');
 
 async function addProduct(req, res) {
   let { orderId, productId, quantity = 1 } = req.body;

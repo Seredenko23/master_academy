@@ -5,42 +5,42 @@ const { ordersController } = require('../controllers');
 const orders = Router();
 
 orders.get(
-  '/get/:id',
+  '/:id',
   asyncHandler(async (req, res) => {
     await ordersController.getOrder(req, res);
   }),
 );
 
 orders.get(
-  '/cancel/:id',
-  asyncHandler(async (req, res) => {
-    await ordersController.cancel(req, res);
-  }),
-);
-
-orders.get(
-  '/get_delivery_price/:id',
+  '/:id/delivery-price',
   asyncHandler(async (req, res) => {
     await ordersController.getPrice(req, res);
   }),
 );
 
+orders.delete(
+  '/:id/cancel',
+  asyncHandler(async (req, res) => {
+    await ordersController.cancel(req, res);
+  }),
+);
+
 orders.post(
-  '/add_product',
+  '/add-product',
   asyncHandler(async (req, res) => {
     await ordersController.addProduct(req, res);
   }),
 );
 
 orders.post(
-  '/change_status',
+  '/status',
   asyncHandler(async (req, res) => {
     await ordersController.changeStatus(req, res);
   }),
 );
 
 orders.post(
-  '/set_route',
+  '/route',
   asyncHandler(async (req, res) => {
     await ordersController.setRoute(req, res);
   }),

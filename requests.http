@@ -43,21 +43,15 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2O
 
 ###
 
-GET http://localhost:3000/products/get/b1c65c70-8eb-429e-b38b-b1a5b7f0c86e
+GET http://localhost:3000/products/310e8fd0-3210-4326-ac3c-67dcae27e7c0
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 
-###
-
-GET http://localhost:3000/orders/get/e3bbe26a-4065-4977-8b27-e70dc7e7b390
+GET http://localhost:3000/orders/e3bbe26a-4065-4977-8b27-e70dc7e7b390
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 
-GET http://localhost:3000/orders/get_delivery_price/e8588729-378e-4227-b758-3416ca3b2686
-authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
-###
-
-GET http://localhost:3000/orders/cancel/1c66c636-0732-4187-aa2d-ddfc5f0bf69a
+GET http://localhost:3000/orders/e8588729-378e-4227-b758-3416ca3b2686/delivery-price
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 #POST
@@ -83,17 +77,18 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/orders/add_product
+POST http://localhost:3000/orders/add-product
 Content-Type: application/json
 
 {
-    "productId": "ef95a974-b3f7-47c4-82a2-1c06fc6da3a3",
-    "quantity": 20
+    "orderId": "e8588729-378e-4227-b758-3416ca3b2686",
+    "productId": "abb33fe6-d893-45bf-8edf-3ac08d7aaae5",
+    "quantity": 10
 }
 
 ###
 
-POST http://localhost:3000/orders/change_status
+POST http://localhost:3000/orders/status
 Content-Type: application/json
 
 {
@@ -110,7 +105,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/orders/set_route
+POST http://localhost:3000/orders/route
 Content-Type: application/json
 
 {
@@ -124,8 +119,12 @@ Content-Type: application/json
 ###
 #DELETE
 
-DELETE Http://localhost:3000/products/delete/23
+DELETE Http://localhost:3000/products/23
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 Content-Type: application/json
+###
+
+DELETE http://localhost:3000/orders/1c66c636-0732-4187-aa2d-ddfc5f0bf69a/cancel
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###

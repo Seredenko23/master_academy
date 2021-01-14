@@ -12,14 +12,14 @@ products.put(
 );
 
 products.delete(
-  '/delete/:id',
+  '/:id',
   asyncHandler(async (req, res) => {
     await productsController.deleteProductFromDB(req, res);
   }),
 );
 
 products.get(
-  '/get/:id',
+  '/:id',
   asyncHandler(async (req, res) => {
     await productsController.getProductFromDB(req, res);
   }),
