@@ -14,9 +14,7 @@ sales.get('/sales_promise', (req, res) => {
 
 sales.get(
   '/sales_async',
-  asyncHandler(async (req, res) => {
-    await salesController.getSalesAsync(res);
-  }),
+  asyncHandler(async (req, res) => salesController.getSalesAsync(res)),
 );
 
 module.exports = sales;
