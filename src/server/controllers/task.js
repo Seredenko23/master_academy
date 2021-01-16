@@ -1,5 +1,5 @@
 const { task1: filter, task2: highestPrice, task3: modify } = require('../../services/task');
-const { createProduct, getAllProducts } = require('../../db/wrappers/product');
+const { createProduct, getAllProducts } = require('../../db/models/product');
 const { generateError } = require('../../services/error');
 
 const store = [];

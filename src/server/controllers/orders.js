@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 const { getCitiesIds, calculateDeliveryPrice } = require('../../services/api');
 const {
   addProductToOrder,
@@ -6,10 +5,10 @@ const {
   getOrderById,
   cancelOrder,
   setCargoRoute,
-} = require('../../db/wrappers/order');
+} = require('../../db/models/order');
 
 async function addProduct(req, res) {
-  let { orderId, productId, quantity = 1 } = req.body;
+  const { orderId, productId, quantity = 1 } = req.body;
 
   const data = await addProductToOrder(productId, orderId, quantity);
 
@@ -17,7 +16,7 @@ async function addProduct(req, res) {
 }
 
 async function changeStatus(req, res) {
-  let { orderId, status } = req.body;
+  const { orderId, status } = req.body;
 
   await changeOrderStatus(orderId, status);
 
@@ -25,15 +24,15 @@ async function changeStatus(req, res) {
 }
 
 async function getOrder(req, res) {
-  let { id } = req.params;
+  const { id } = req.params;
 
-  let data = await getOrderById(id);
+  const data = await getOrderById(id);
 
   res.send(data);
 }
 
 async function cancel(req, res) {
-  let { id } = req.params;
+  const { id } = req.params;
 
   await cancelOrder(id);
 
@@ -41,7 +40,7 @@ async function cancel(req, res) {
 }
 
 async function setRoute(req, res) {
-  let { id, addresses } = req.body;
+  const { id, addresses } = req.body;
 
   await setCargoRoute(id, addresses);
 
@@ -50,22 +49,22 @@ async function setRoute(req, res) {
 
 async function getPrice(req, res) {
   try {
-    let { id } = req.params;
+    const { id } = req.params;
 
-    let order = await getOrderById(id);
+    const order = await getOrderById(id);
 
-    let { from, to, products } = order;
+    const { from, to, products } = order;
 
-    let citiesId = await getCitiesIds({ from, to });
+    const citiesId = await getCitiesIds({ from, to });
 
-    let params = { totalWeight: 0, totalPrice: 0, from: citiesId[0], to: citiesId[1] };
+    const params = { totalWeight: 0, totalPrice: 0, from: citiesId[0], to: citiesId[1] };
 
     products.forEach((product) => {
       params.totalPrice += product.price * product.quantity;
       params.totalWeight += product.weight * product.quantity;
     });
 
-    let deliveryPrice = await calculateDeliveryPrice(params);
+    const deliveryPrice = await calculateDeliveryPrice(params);
 
     res.send({ deliveryPrice });
   } catch (err) {

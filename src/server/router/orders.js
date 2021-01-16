@@ -20,7 +20,7 @@ orders.delete(
 );
 
 orders.post(
-  '/add-product',
+  '/product',
   asyncHandler(async (req, res) => ordersController.addProduct(req, res)),
 );
 

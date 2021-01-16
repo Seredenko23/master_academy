@@ -1,12 +1,11 @@
-/* eslint-disable default-case */
 const { knex } = require('../index');
 const { generateError } = require('../../services/error');
 
-async function getOrderById(orderId) {
+async function getOrderById(id) {
   try {
-    if (!orderId) throw generateError('No order id defined!', 'BadRequestError');
+    if (!id) throw generateError('No order id defined!', 'BadRequestError');
 
-    const [order] = await knex('orders').select().where({ id: orderId });
+    const [order] = await knex('orders').select().where({ id });
 
     if (!order) throw generateError('Invalid id!', 'BadRequestError');
 
@@ -23,7 +22,7 @@ async function getOrderById(orderId) {
       .innerJoin('products', 'products.id', 'order_items.product_id')
       .innerJoin('types', 'products.type', 'types.id')
       .innerJoin('colors', 'products.color', 'colors.id')
-      .where({ order_id: orderId });
+      .where({ order_id: id });
 
     order.products = productsInOrder;
     return order;
@@ -33,19 +32,13 @@ async function getOrderById(orderId) {
   }
 }
 
-async function changeQuantity(id, quantity, operator) {
+async function changeQuantity(id, quantity) {
   try {
     if (!id) throw generateError('No id defined', 'BadRequestError');
     const [res] = await knex('products').select('quantity').where({ id });
     let { quantity: originalQuantity } = res;
-    switch (operator) {
-      case '+':
-        originalQuantity += quantity;
-        break;
-      case '-':
-        originalQuantity -= quantity;
-        break;
-    }
+
+    originalQuantity += quantity;
 
     if (originalQuantity < 0) throw generateError('Not enough products!', 'BadRequestError');
 
@@ -78,7 +71,7 @@ async function addProductToOrder(productId, orderId, quantity = 1) {
     if (!productId) throw generateError('NO product id defined!', 'BadRequestError');
     if (!orderId) orderId = await createOrder();
 
-    await changeQuantity(productId, quantity, '-');
+    await changeQuantity(productId, -quantity);
 
     const [res] = await knex('order_items')
       .insert({
@@ -116,9 +109,9 @@ async function cancelOrder(orderId) {
 
     await knex('orders').del().where({ id: orderId });
 
-    await order.products.forEach(async (product) => {
-      await changeQuantity(product.id, product.quantity, '+');
-    });
+    const promises = order.products.map((product) => changeQuantity(product.id, product.quantity));
+
+    Promise.all(promises);
 
     return true;
   } catch (err) {

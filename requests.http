@@ -125,6 +125,6 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2O
 Content-Type: application/json
 ###
 
-DELETE http://localhost:3000/orders/1c66c636-0732-4187-aa2d-ddfc5f0bf69a/cancel
+DELETE http://localhost:3000/orders/e8588729-378e-4227-b758-3416ca3b2686/cancel
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###

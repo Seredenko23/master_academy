@@ -1,7 +1,7 @@
 const { createGunzip } = require('zlib');
 const { createOptimizationStream } = require('../../services/optimization');
 const { getFilesInfo } = require('../../services/files');
-const { deleteProduct, getProduct } = require('../../db/wrappers/product');
+const { deleteProduct, getProduct } = require('../../db/models/product');
 const { generateError } = require('../../services/error');
 
 const { transformCsvToJson, promisifiedPipeline } = require('../../services/utils');
