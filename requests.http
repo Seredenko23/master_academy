@@ -47,7 +47,7 @@ GET http://localhost:3000/products/310e8fd0-3210-4326-ac3c-67dcae27e7c0
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 
-GET http://localhost:3000/orders/e8588729-378e-4227-b758-3416ca3b2686
+GET http://localhost:3000/orders/4e753ec1-4ca2-4f15-aec0-c4051f09c3ff
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 
@@ -77,12 +77,11 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/orders/add-product
+POST http://localhost:3000/orders/product
 Content-Type: application/json
 
 {
-    "orderId": "e8588729-378e-4227-b758-3416ca3b2686",
-    "productId": "abb33fe6-d893-45bf-8edf-3ac08d7aaae5",
+    "productId": "310e8fd0-3210-4326-ac3c-67dcae27e7c0",
     "quantity": 10
 }
 

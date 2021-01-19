@@ -1,14 +1,23 @@
 const { getCitiesIds, calculateDeliveryPrice } = require('../../services/api');
+const { generateError } = require('../../services/error');
 const {
   addProductToOrder,
   changeOrderStatus,
   getOrderById,
   cancelOrder,
   setCargoRoute,
+  createOrder,
+  changeQuantity,
 } = require('../../db/models/order');
 
 async function addProduct(req, res) {
-  const { orderId, productId, quantity = 1 } = req.body;
+  let { orderId } = req.body;
+  const { productId, quantity = 1 } = req.body;
+
+  await changeQuantity(productId, -quantity);
+
+  if (!productId) throw generateError('NO product id defined!', 'BadRequestError');
+  if (!orderId) orderId = await createOrder();
 
   const data = await addProductToOrder(productId, orderId, quantity);
 

@@ -40,7 +40,7 @@ async function changeQuantity(id, quantity) {
 
     originalQuantity += quantity;
 
-    if (originalQuantity < 0) throw generateError('Not enough products!', 'BadRequestError');
+    if (originalQuantity <= 0) throw generateError('Not enough products!', 'BadRequestError');
 
     const [changedQuantity] = await knex('products')
       .update({ quantity })
@@ -68,11 +68,6 @@ async function createOrder() {
 
 async function addProductToOrder(productId, orderId, quantity = 1) {
   try {
-    if (!productId) throw generateError('NO product id defined!', 'BadRequestError');
-    if (!orderId) orderId = await createOrder();
-
-    await changeQuantity(productId, -quantity);
-
     const [res] = await knex('order_items')
       .insert({
         order_id: orderId,
@@ -134,4 +129,12 @@ async function setCargoRoute(id, { from, to }) {
   }
 }
 
-module.exports = { addProductToOrder, changeOrderStatus, getOrderById, cancelOrder, setCargoRoute };
+module.exports = {
+  addProductToOrder,
+  changeOrderStatus,
+  getOrderById,
+  createOrder,
+  cancelOrder,
+  setCargoRoute,
+  changeQuantity,
+};
