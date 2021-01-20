@@ -6,23 +6,17 @@ const products = Router();
 
 products.put(
   '/upload',
-  asyncHandler(async (req, res) => {
-    await productsController.uploadCSVFile(req, res);
-  }),
+  asyncHandler((req, res) => productsController.uploadCSVFile(req, res)),
 );
 
 products.delete(
-  '/delete/:id',
-  asyncHandler(async (req, res) => {
-    await productsController.deleteProductFromDB(req, res);
-  }),
+  '/:id',
+  asyncHandler((req, res) => productsController.deleteProductFromDB(req, res)),
 );
 
 products.get(
-  '/get/:id',
-  asyncHandler(async (req, res) => {
-    await productsController.getProductFromDB(req, res);
-  }),
+  '/:id',
+  asyncHandler((req, res) => productsController.getProductFromDB(req, res)),
 );
 
 module.exports = products;

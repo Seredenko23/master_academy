@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { task, sales, products, authorization } = require('./router');
+const { task, sales, products, authorization, orders } = require('./router');
 const auth = require('./middlewares/tokenAuth');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -16,6 +16,7 @@ app.use(auth);
 app.use('/task', task);
 app.use('/sales', sales);
 app.use('/products', products);
+app.use('/orders', orders);
 
 app.get('/', (req, res) => {
   res.send('Home');

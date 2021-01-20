@@ -43,7 +43,15 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2O
 
 ###
 
-GET http://localhost:3000/products/get/b1c65c70-8eb-429e-b38b-b1a5b7f0c86e
+GET http://localhost:3000/products/310e8fd0-3210-4326-ac3c-67dcae27e7c0
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
+###
+
+GET http://localhost:3000/orders/4e753ec1-4ca2-4f15-aec0-c4051f09c3ff
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
+###
+
+GET http://localhost:3000/orders/e8588729-378e-4227-b758-3416ca3b2686/delivery-price
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###
 #POST
@@ -69,6 +77,25 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:3000/orders/product
+Content-Type: application/json
+
+{
+    "productId": "310e8fd0-3210-4326-ac3c-67dcae27e7c0",
+    "quantity": 10
+}
+
+###
+
+POST http://localhost:3000/orders/status
+Content-Type: application/json
+
+{
+    "orderId": "fccff04e-b28e-48af-8aec-938e4ba60632",
+    "status": "Opened"
+}
+
+###
 POST http://localhost:3000/auth/refresh
 Content-Type: application/json
 
@@ -77,10 +104,26 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:3000/orders/route
+Content-Type: application/json
+
+{
+    "id": "e8588729-378e-4227-b758-3416ca3b2686",
+    "addresses": {
+        "from": "Черкаси",
+        "to": "Львів"
+    }
+}
+
+###
 #DELETE
 
-DELETE Http://localhost:3000/products/delete/23
+DELETE Http://localhost:3000/products/23
 authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg5ODI2ODIsImV4cCI6MTYwODk4MjY5N30.Ag_ElnH56KKG6ry4E_h2aweAnnu0Xl79U_fdc69dJxI
 
 Content-Type: application/json
+###
+
+DELETE http://localhost:3000/orders/e8588729-378e-4227-b758-3416ca3b2686/cancel
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hc3RlcnMiLCJwYXNzd29yZCI6IkFjYWRlbXkiLCJpYXQiOjE2MDg5ODU1NzYsImV4cCI6MTYwODk4NTYwNn0.HI3tHY-fmrIZ5D_ZROfpcbMSng2fk9Ax3OlLwKNiPAE
 ###

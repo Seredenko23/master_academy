@@ -9,6 +9,7 @@ const config = {
   optimizedDirectory: process.env.OPTIMIZED_DIRECTORY || './upload/optimized',
   accessSecret: process.env.ACCESS_TOKEN_SECRET || '',
   refreshSecret: process.env.REFRESH_TOKEN_SECRET || '',
+  apiKey: process.env.API_KEY || '',
   db: {
     client: 'postgresql',
     connection: {
